@@ -1,5 +1,7 @@
 <?php
-
+ini_set('display_errors', 1); // Show errors in development
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL); // Report all types of errors
 use Dotenv\Dotenv;
 use App\Controllers\ApiController;
 use App\Exceptions\ApiException;
