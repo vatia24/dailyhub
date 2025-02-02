@@ -13,15 +13,15 @@ use Twilio\Rest\Client;
 class AuthService
 {
     private AuthModel $authModel;
-    private $facebookConfig;
-    private $googleConfig;
+    private mixed $facebookConfig;
+    private mixed $googleConfig;
 
     public function __construct()
     {
         $this->authModel = new AuthModel();
-        $config = require_once __DIR__ . '/../../Config/Db.php';
-        $this->facebookConfig = $config['facebook'];
-        $this->googleConfig = $config['google'];
+//        $config = require_once __DIR__ . '/../../Config/Db.php';
+//        $this->facebookConfig = $config['facebook'];
+//        $this->googleConfig = $config['google'];
     }
 
     /**
