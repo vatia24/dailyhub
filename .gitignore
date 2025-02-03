@@ -2,7 +2,7 @@
 /vendor/
 
 # Composer files (lock file is usually kept for applications)
-/composer.lock
+#/composer.lock
 
 # PHP unit testing files
 phpunit.xml
