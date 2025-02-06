@@ -15,6 +15,7 @@ class AuthModel
         $stmt->bindParam(':mobile', $mobile);
         $stmt->bindParam(':otp', $otp);
         $stmt->execute();
+        $stmt->closeCursor();
     }
 
     public function verifyOtp(string $mobile, int $otp): bool
@@ -28,12 +29,14 @@ class AuthModel
         $stmt->execute();
 
         $lastOtp = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
         if (!$lastOtp || $lastOtp['otp'] !== (string)$otp) return false;
 
         $updateQuery = 'UPDATE otp_codes SET is_used = 1 WHERE id = :id';
         $updateStmt = $db->prepare($updateQuery);
         $updateStmt->bindParam(':id', $lastOtp['id']);
         $updateStmt->execute();
+        $updateStmt->closeCursor();
 
         return true;
     }
@@ -45,17 +48,21 @@ class AuthModel
         $stmt = $db->prepare($query);
         $stmt->bindParam(':mobile', $mobile);
         $stmt->execute();
+        $stmt->closeCursor();
     }
 
     public function findUserByMailOrNumber($identifier)
     {
         $db = Db::getInstance();
-        $query = 'SELECT * FROM users WHERE email = :identifier OR mobile = :identifier LIMIT 1';
+        $query = 'SELECT id, password, name, status FROM users WHERE email = :identifier OR mobile = :identifier LIMIT 1';
         $stmt = $db->prepare($query);
         $stmt->bindParam(':identifier', $identifier);
         $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+
+        return $result;
     }
 
 }

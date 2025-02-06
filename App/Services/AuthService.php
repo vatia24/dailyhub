@@ -16,12 +16,11 @@ class AuthService
     private mixed $facebookConfig;
     private mixed $googleConfig;
 
-    public function __construct()
+    public function __construct(AuthModel $authModel, $authConfig)
     {
-        $this->authModel = new AuthModel();
-//        $config = require_once __DIR__ . '/../../Config/Db.php';
-//        $this->facebookConfig = $config['facebook'];
-//        $this->googleConfig = $config['google'];
+        $this->authModel = $authModel;
+        $this->facebookConfig = $config['facebook'];
+        $this->googleConfig = $config['google'];
     }
 
     /**

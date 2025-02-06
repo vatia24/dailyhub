@@ -57,9 +57,24 @@ try {
             $vars = $routeInfo[2];
 
             $method = ucfirst($vars['method']); // Extract method from URI
-            [ $class, $action ] = $handler;
-            (new $class())->$action();
+            [$class, $action] = $handler;
+
+            $autModel = new \App\Models\AuthModel();
+            $userModel = new \App\Models\UserModel();
+            $productModel = new \App\Models\ProductModel();
+
+            // Manually create required dependencies
+            $authService = new \App\Services\AuthService($autModel, require_once __DIR__ . '/Config/AuthConfig.php');
+            $userService = new \App\Services\UserService($userModel, $authService);
+            $productService = new \App\Services\ProductService($productModel);
+
+            // Create the instance of the controller with the required dependencies
+            $controller = new $class($authService, $userService, $productService);
+
+            // Call the action
+            $controller->$action();
             break;
+
     }
 } catch (ApiException $e) {
     // Handle custom `ApiException`

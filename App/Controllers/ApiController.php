@@ -15,12 +15,11 @@ class ApiController
     private UserService $userService;
     private ProductService $productService;
 
-    public function __construct()
+    public function __construct(AuthService $authService, UserService $userService, ProductService $productService)
     {
-
-        $this->authService = new AuthService();
-        $this->userService = new UserService();
-        $this->productService = new ProductService();
+        $this->authService = $authService;
+        $this->userService = $userService;
+        $this->productService = $productService;
     }
 
     public function handleRequest(): void

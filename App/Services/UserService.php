@@ -4,17 +4,16 @@ namespace App\Services;
 
 use App\Exceptions\ApiException;
 use App\Models\UserModel;
-use App\Services\AuthService;
 
 class UserService
 {
     private UserModel $userModel;
     private AuthService $authService;
 
-    public function __construct()
+    public function __construct(UserModel $userModel, AuthService $authService)
     {
-        $this->userModel = new UserModel();
-        $this->authService = new AuthService();
+        $this->userModel = $userModel;
+        $this->authService = $authService;
     }
 
     /**

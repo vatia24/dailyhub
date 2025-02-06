@@ -3,19 +3,15 @@
 namespace App\Services;
 
 use App\Models\ProductModel;
-use App\Models\UserModel;
 use App\Exceptions\ApiException;
-use App\Controllers\ApiController;
 
 class ProductService
 {
     private ProductModel $productModel;
-    private ApiController $apiController;
 
-    public function __construct()
+    public function __construct(ProductModel $productModel)
     {
-        $this->productModel = new ProductModel();
-        $this->apiController = new ApiController();
+        $this->productModel = $productModel;
     }
 
     /**
