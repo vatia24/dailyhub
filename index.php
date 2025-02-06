@@ -64,7 +64,7 @@ try {
             $userModel = new \App\Models\UserModel();
             $productModel = new \App\Models\ProductModel();
 
-            $authConfig = require_once __DIR__ . './Config/AuthConfig.php';
+            $authConfig = require_once './Config/AuthConfig.php';
 
             // Manually create required dependencies
             $authService = new \App\Services\AuthService($autModel, $authConfig);
