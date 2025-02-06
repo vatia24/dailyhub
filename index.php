@@ -59,12 +59,15 @@ try {
             $method = ucfirst($vars['method']); // Extract method from URI
             [$class, $action] = $handler;
 
+            //dependency initialization for services
             $autModel = new \App\Models\AuthModel();
             $userModel = new \App\Models\UserModel();
             $productModel = new \App\Models\ProductModel();
 
+            $authConfig = require_once __DIR__ . './Config/AuthConfig.php';
+
             // Manually create required dependencies
-            $authService = new \App\Services\AuthService($autModel, require_once __DIR__ . '/Config/AuthConfig.php');
+            $authService = new \App\Services\AuthService($autModel, $authConfig);
             $userService = new \App\Services\UserService($userModel, $authService);
             $productService = new \App\Services\ProductService($productModel);
 

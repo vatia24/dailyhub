@@ -19,8 +19,8 @@ class AuthService
     public function __construct(AuthModel $authModel, $authConfig)
     {
         $this->authModel = $authModel;
-        $this->facebookConfig = $config['facebook'];
-        $this->googleConfig = $config['google'];
+        $this->facebookConfig = $authConfig['facebook'];
+        $this->googleConfig = $authConfig['google'];
     }
 
     /**
