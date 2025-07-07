@@ -5,10 +5,16 @@
 
     RewriteEngine On
 
+    DirectoryIndex index.html index.php
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
+
+    # Skip rewriting if file exists (including index.html)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
 
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
