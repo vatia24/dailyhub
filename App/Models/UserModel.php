@@ -3,14 +3,20 @@
 namespace App\Models;
 
 use Config\Db;
+use PDO;
 
 class UserModel
 {
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Db::getInstance(); // Assumes Db::getInstance() initializes the PDO connection
+    }
+
     public function checkLimit(string $username): int
     {
-        // Example database interaction
-        $db = Db::getInstance();
-        return $db->query('SELECT limit_check FROM user_limits WHERE username = ?', [$username])->fetchColumn();
+        return $this->db->query('SELECT limit_check FROM user_limits WHERE username = ?', [$username])->fetchColumn();
     }
 
     //1. **`get_user_by_email`**
@@ -19,9 +25,7 @@ class UserModel
 
     public function checkUserCredentials(array $credentials)
     {
-        // Example: Query database for user credentials
-        $db = Db::getInstance();
-        $result = $db->query(
+        $result = $this->db->query(
             'SELECT * FROM users WHERE username = ? AND password = ?',
             [$credentials['username'], $credentials['password']]
         )->fetch();
@@ -31,11 +35,10 @@ class UserModel
 
     public function register(array $data): false|string
     {
-        $db = Db::getInstance();
         $query = 'INSERT INTO users (username, name, email, mobile, password, user_type)
               VALUES (:username, :name, :email, :mobile, :password, :type)';
 
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         $stmt->bindParam(':username', $data['username']);
         $stmt->bindParam(':name', $data['name']);
         $stmt->bindParam(':email', $data['email']);
@@ -53,8 +56,30 @@ class UserModel
 
         $stmt->execute();
 
-        return $db->lastInsertId();
+        return $this->db->lastInsertId();
     }
 
+    public function findUserByMailOrNumber($email, $mobile)
+    {
+        $query = 'SELECT id FROM users WHERE email = :email OR mobile = :mobile LIMIT 1';
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':mobile', $mobile);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+
+        return $result;
+    }
+
+    public function updateUser(array $data): void
+    {
+        $query = 'UPDATE users SET name = :name, email = :email, mobile = :mobile WHERE id = :id';
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':name', $data['name']);
+        $stmt->bindParam(':email', $data['email']);
+        $stmt->bindParam(':mobile', $data['mobile']);
+    }
 
 }

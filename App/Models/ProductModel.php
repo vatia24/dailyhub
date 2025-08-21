@@ -3,51 +3,136 @@
 namespace App\Models;
 
 use Config\Db;
-use Exception;
 use PDO;
 use Throwable;
+use Exception;
 
 class ProductModel
 {
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Db::getInstance(); // Assumes Db::getInstance() initializes the PDO connection
+    }
+
     /**
+     * Fetch all products with their discounts.
+     *
+     * @return array
      * @throws Exception
      */
-    public function getProducts(array $properties): array
+    public function getAllProductsWithDiscounts(): array
     {
-        $db = Db::getInstance();
-
         try {
-            // Execute the query
-            $stmt = $db->query('SELECT * FROM product');
+            $statement = $this->db->prepare(
+                'SELECT p.*, d.*
+                 FROM product p
+                 LEFT JOIN discount d ON p.id = d.product_id'
+            );
+            $statement->execute();
 
-            // Check if the query execution was successful
-            if (!$stmt) {
-                throw new Exception('Database query failed: ' . implode(', ', $db->errorInfo()));
-            }
-
-            // Fetch all rows as an associative array
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Return the result set as an array
+            return $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            // Log the error message or handle it accordingly
-            throw new Exception('An error occurred while fetching products: ' . $e->getMessage());
+            throw new Exception('Error fetching all products: ' . $e->getMessage(), $e->getCode());
         }
     }
 
-    public function getSingleProduct(array $credentials)
+    /**
+     * Fetch a single product by ID with its discount.
+     *
+     * @param int $productId
+     * @return array|null
+     * @throws Exception
+     */
+    public function getProductWithDiscountById(int $productId): ?array
     {
-        // Example: Query database for user credentials
-        $db = Db::getInstance();
-        $result = $db->query(
-            'SELECT * FROM users WHERE username = ? AND password = ?',
-            [$credentials['username'], $credentials['password']]
-        )->fetch();
+        try {
+            $statement = $this->db->prepare(
+                'SELECT p.*, d.*
+                 FROM product p
+                 LEFT JOIN discount d ON p.id = d.product_id
+                 WHERE p.id = :productId'
+            );
+            $statement->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $statement->execute();
 
-        return $result ?: '0';
+            $product = $statement->fetch(PDO::FETCH_ASSOC);
+            return $product ?: null; // Return null if no product is found
+        } catch (Throwable $e) {
+            throw new Exception('Error fetching product by ID: ' . $e->getMessage(), $e->getCode());
+        }
     }
 
-    public function resetLimit(string $username): void
+    /**
+     * Add a new product.
+     *
+     * @param string $name
+     * @param float $price
+     * @return int ID of the newly created product
+     * @throws Exception
+     */
+    public function addProduct(string $name, float $price): int
     {
-        $db = Db::getInstance();
-        $db->query('UPDATE user_limits SET attempts = 0 WHERE username = ?', [$username]);
+        try {
+            $statement = $this->db->prepare(
+                'INSERT INTO product (name, price) VALUES (:name, :price)'
+            );
+            $statement->bindParam(':name', $name, PDO::PARAM_STR);
+            $statement->bindParam(':price', $price, PDO::PARAM_STR);
+            $statement->execute();
+
+            return (int)$this->db->lastInsertId();
+        } catch (Throwable $e) {
+            throw new Exception('Error adding product: ' . $e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Update a product.
+     *
+     * @param int $productId
+     * @param string $name
+     * @param float $price
+     * @return bool
+     * @throws Exception
+     */
+    public function updateProduct(int $productId, string $name, float $price): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE product 
+                 SET name = :name, price = :price 
+                 WHERE id = :productId'
+            );
+            $statement->bindParam(':productId', $productId, PDO::PARAM_INT);
+            $statement->bindParam(':name', $name, PDO::PARAM_STR);
+            $statement->bindParam(':price', $price, PDO::PARAM_STR);
+
+            return $statement->execute();
+        } catch (Throwable $e) {
+            throw new Exception('Error updating product: ' . $e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * Delete a product.
+     *
+     * @param int $productId
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteProduct(int $productId): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'DELETE FROM product WHERE id = :productId'
+            );
+            $statement->bindParam(':productId', $productId, PDO::PARAM_INT);
+
+            return $statement->execute();
+        } catch (Throwable $e) {
+            throw new Exception('Error deleting product: ' . $e->getMessage(), $e->getCode());
+        }
     }
 }

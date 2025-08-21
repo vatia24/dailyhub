@@ -40,6 +40,9 @@ class UserService
             throw new ApiException(400, 'WEAK_PASSWORD', 'Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character');
         }
 
+        $userExist = $this->userModel->findUserByMailOrNumber($data['email'], $data['mobile']);
+        if (isset($userExist['id'])) throw new ApiException(400, 'USER_ALREADY_EXISTS', 'User already exists');
+
         $userId = $this->userModel->register($data);
 
         if (!$userId) throw new ApiException(500, 'INTERNAL_SERVER_ERROR', 'Failed to register user');

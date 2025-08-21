@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ApiException;
 use App\Helpers\JwtHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\AuthModel;
 use Exception;
 use League\OAuth2\Client\Provider\Facebook;
@@ -13,12 +14,15 @@ use Twilio\Rest\Client;
 class AuthService
 {
     private AuthModel $authModel;
+
+    private mixed $authConfig;
     private mixed $facebookConfig;
     private mixed $googleConfig;
 
     public function __construct(AuthModel $authModel, $authConfig)
     {
         $this->authModel = $authModel;
+        $this->authConfig = $authConfig;
         $this->facebookConfig = $authConfig['facebook'];
         $this->googleConfig = $authConfig['google'];
     }
@@ -26,7 +30,7 @@ class AuthService
     /**
      * @throws Exception
      */
-    public function handleFacebookAuth($accessToken)
+    public function handleFacebookAuth($accessToken): array
     {
         $provider = new Facebook([
             'clientId' => $this->facebookConfig['client_id'],
@@ -57,7 +61,7 @@ class AuthService
         }
     }
 
-    public function handleGoogleAuth($accessToken)
+    public function handleGoogleAuth($accessToken): array
     {
         $provider = new Google([
             'clientId' => $this->googleConfig['client_id'],
@@ -114,7 +118,7 @@ class AuthService
                 ->verifications
                 ->create($mobile, "sms", ["customCode" => $otp]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ApiException(500, 'OTP_SEND_FAILED', 'Failed to send OTP: ' . $e->getMessage());
         }
     }
@@ -151,7 +155,7 @@ class AuthService
                 // Activate the user status
                 $this->authModel->activateUser($data['mobile']);
                 return true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new ApiException(500, 'ACTIVATION_FAILED', 'Failed to activate user account: ' . $e->getMessage());
             }
         }
@@ -159,19 +163,74 @@ class AuthService
     }
 
     /**
-     * @throws \Exception
+     * @throws ApiException
      */
-    public function login($identifier, $password)
+    public function authorize($data): array
     {
-        $user = $this->authModel->findUserByMailOrNumber($identifier);
+        $user = $this->authModel->findUserByMailOrNumber($data['identifier']);
 
-        if (!$user || !password_verify($password, $user['password'])) {
-            throw new \Exception('Invalid credentials', 401);
+        if (!$user || !password_verify($data['password'], $user['password'])) {
+            throw new ApiException(401,'INVALID_CREDENTIALS', 'Invalid credentials');
+        } elseif ($user['status'] == 'unverified') {
+            //send otp code to activate user
         }
 
         // Generate JWT Token
-        $token = JwtHelper::generateToken(['id' => $user['id'], 'username' => $user['username']]);
+        $token = JwtHelper::generateToken(['id' => $user['id'], 'identifier' => $data['identifier'], 'role' => $user['user_type']]);
+
+        $this->authModel->storeAccessToken($user['id'], $token, date('Y-m-d H:i:s',
+            time() + $this->authConfig['jwt_expiration']));
 
         return ['token' => $token];
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function authorizeRequest(): \stdClass
+    {
+        $headers = getallheaders(); // Get request headers
+        $authHeader = $headers['Authorization'] ?? null;
+
+        if (!$authHeader) {
+            throw new ApiException(401, 'UNAUTHORIZED', 'Authorization header not found');
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader); // Extract the token
+        $decodedToken = JwtHelper::validateToken($token);
+
+        if (!$decodedToken) {
+            throw new ApiException(401, 'INVALID_TOKEN', 'Invalid or expired token');
+        }
+
+        return $decodedToken; // Return the token if valid
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function facebookAuth(): void
+    {
+        $accessToken = $_GET['code']; // Get 'code' from Facebook OAuth redirect
+        try {
+            $result = $this->handleFacebookAuth($accessToken);
+            ResponseHelper::response(200, 'SUCCESS', $result);
+        } catch (\Exception $e) {
+            throw new ApiException(401, 'CANNOT_AUTHORIZE', $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function googleAuth(): void
+    {
+        $accessToken = $_GET['code']; // Get 'code' from Google OAuth redirect
+        try {
+            $result = $this->handleGoogleAuth($accessToken);
+            ResponseHelper::response(200, 'SUCCESS', $result);
+        } catch (\Exception $e) {
+            throw new ApiException(401, 'CANNOT_AUTHORIZE', $e->getMessage());
+        }
     }
 }

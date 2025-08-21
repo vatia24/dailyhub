@@ -70,6 +70,7 @@ class ApiController
         return [
             'checkUserCredentials'  => [$this->userService, 'checkUserCredentials'],
             'registerUser'         => [$this->userService, 'registerUser'],
+            'authorize'         => [$this->authService, 'authorize'],
             'verifyCustomer'           => [$this->authService, 'verifyAndActivateUser'],
             'getProducts'           => [$this->productService, 'getProducts'],
 
@@ -113,8 +114,17 @@ class ApiController
         $path = trim($parts['path'], '/');
         $segments = explode('/', $path);
 
-        return ($segments[0] === 'api' && isset($segments[1])) ? $segments[1] : null;
+        // Find the 'api' segment
+        $apiIndex = array_search('api', $segments);
+
+        // If 'api' segment is found and there's a next segment, return it
+        if ($apiIndex !== false && isset($segments[$apiIndex + 1])) {
+            return $segments[$apiIndex + 1];
+        }
+
+        return null;
     }
+
 
     /**
      * Parses the JSON input and trims all fields recursively.
@@ -154,55 +164,4 @@ class ApiController
         return $input;
     }
 
-
-    // i want better place for that functions
-    /**
-     * @throws ApiException
-     */
-    public function authorizeRequest(): \stdClass
-    {
-        $headers = getallheaders(); // Get request headers
-        $authHeader = $headers['Authorization'] ?? null;
-
-        if (!$authHeader) {
-            throw new ApiException(401, 'UNAUTHORIZED', 'Authorization header not found');
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader); // Extract the token
-        $decodedToken = JwtHelper::validateToken($token);
-
-        if (!$decodedToken) {
-            throw new ApiException(401, 'INVALID_TOKEN', 'Invalid or expired token');
-        }
-
-        return $decodedToken; // Return the token if valid
-    }
-
-    /**
-     * @throws ApiException
-     */
-    public function facebookAuth(): void
-    {
-        $accessToken = $_GET['code']; // Get 'code' from Facebook OAuth redirect
-        try {
-            $result = $this->authService->handleFacebookAuth($accessToken);
-            ResponseHelper::response(200, 'SUCCESS', $result);
-        } catch (\Exception $e) {
-            throw new ApiException(401, 'CANNOT_AUTHORIZE', $e->getMessage());
-        }
-    }
-
-    /**
-     * @throws ApiException
-     */
-    public function googleAuth(): void
-    {
-        $accessToken = $_GET['code']; // Get 'code' from Google OAuth redirect
-        try {
-            $result = $this->authService->handleGoogleAuth($accessToken);
-            ResponseHelper::response(200, 'SUCCESS', $result);
-        } catch (\Exception $e) {
-            throw new ApiException(401, 'CANNOT_AUTHORIZE', $e->getMessage());
-        }
-    }
 }
