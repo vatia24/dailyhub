@@ -16,7 +16,12 @@ class UserModel
 
     public function checkLimit(string $username): int
     {
-        return $this->db->query('SELECT limit_check FROM user_limits WHERE username = ?', [$username])->fetchColumn();
+        $stmt = $this->db->prepare('SELECT limit_check FROM user_limits WHERE username = :username');
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $limit = $stmt->fetchColumn();
+        $stmt->closeCursor();
+        return $limit !== false ? (int)$limit : 0;
     }
 
     //1. **`get_user_by_email`**
@@ -25,12 +30,12 @@ class UserModel
 
     public function checkUserCredentials(array $credentials)
     {
-        $result = $this->db->query(
-            'SELECT * FROM users WHERE username = ? AND password = ?',
-            [$credentials['username'], $credentials['password']]
-        )->fetch();
-
-        return $result ?: '0';
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username LIMIT 1');
+        $stmt->bindParam(':username', $credentials['username']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result ?: null;
     }
 
     public function register(array $data): false|string
@@ -43,7 +48,6 @@ class UserModel
         $stmt->bindParam(':name', $data['name']);
         $stmt->bindParam(':email', $data['email']);
         $stmt->bindParam(':mobile', $data['mobile']);
-        $stmt->bindParam(':password', $data['password']);
         $stmt->bindParam(':type', $data['type']);
 
         $options = [
@@ -80,6 +84,27 @@ class UserModel
         $stmt->bindParam(':name', $data['name']);
         $stmt->bindParam(':email', $data['email']);
         $stmt->bindParam(':mobile', $data['mobile']);
+        $stmt->bindParam(':id', $data['id']);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    public function resetLimit(string $username): void
+    {
+        $stmt = $this->db->prepare('UPDATE user_limits SET limit_check = 0 WHERE username = :username');
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    public function findByUsername(string $username): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username LIMIT 1');
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $user ?: null;
     }
 
 }

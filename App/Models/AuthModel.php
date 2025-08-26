@@ -25,8 +25,6 @@ class AuthModel
 
     public function verifyOtp(string $mobile, int $otp): bool
     {
-        $mobile = '+995'.$mobile;
-
         $query = 'SELECT id, otp FROM otp_codes WHERE mobile = :mobile AND created_at >= NOW() - INTERVAL 2 MINUTE AND is_used = 0 ORDER BY created_at DESC LIMIT 1';
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':mobile', $mobile);

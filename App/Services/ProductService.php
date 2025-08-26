@@ -8,10 +8,12 @@ use App\Exceptions\ApiException;
 class ProductService
 {
     private ProductModel $productModel;
+    private AuthService $authService;
 
-    public function __construct(ProductModel $productModel)
+    public function __construct(ProductModel $productModel, AuthService $authService)
     {
         $this->productModel = $productModel;
+        $this->authService = $authService;
     }
 
     /**
@@ -19,9 +21,14 @@ class ProductService
      */
     public function getProducts(array $data): array
     {
-        $token_data = $this->apiController->authorizeRequest();
-        $products = $this->productModel->getProducts($data);
+        // Ensure the request is authorized
+        $this->authService->authorizeRequest();
 
-        return $products;
+        if (isset($data['id'])) {
+            $product = $this->productModel->getProductWithDiscountById((int)$data['id']);
+            return $product ? [$product] : [];
+        }
+
+        return $this->productModel->getAllProductsWithDiscounts();
     }
 }

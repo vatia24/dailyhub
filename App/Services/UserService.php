@@ -47,7 +47,7 @@ class UserService
 
         if (!$userId) throw new ApiException(500, 'INTERNAL_SERVER_ERROR', 'Failed to register user');
 
-        $this->authService->sendOtp('+995'.$data['mobile']);
+        $this->authService->sendOtp($data['mobile']);
 
         return ['status' => 'success', 'user_id' => $userId];
     }
@@ -67,13 +67,15 @@ class UserService
         $limitCheck = $this->userModel->checkLimit($username);
         $this->handleLimitCheckErrors($limitCheck);
 
-        $credentials = $this->userModel->checkUserCredentials($data);
-
-        if ($credentials === '0') throw new ApiException(400, 'INVALID_CREDENTIALS', 'Invalid username or password');
+        $user = $this->userModel->findByUsername($username);
+        if (!$user || !password_verify($data['password'], $user['password'])) {
+            throw new ApiException(400, 'INVALID_CREDENTIALS', 'Invalid username or password');
+        }
 
         $this->userModel->resetLimit($username);
 
-        return ['user' => $credentials];
+        unset($user['password']);
+        return ['user' => $user];
     }
 
 

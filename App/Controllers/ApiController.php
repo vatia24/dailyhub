@@ -22,16 +22,9 @@ class ApiController
         $this->productService = $productService;
     }
 
-    public function handleRequest(): void
+    public function handleRequest(string $method): void
     {
         try {
-            $method = $this->extractMethodFromUrl();
-
-            // Ensure the method is provided
-            if (is_null($method)) {
-                throw new ApiException(400, 'BAD_REQUEST', 'The "method" is required.');
-            }
-
             // Define a mapping for method handlers
             $methodMap = $this->getMethodMap();
 
@@ -73,6 +66,8 @@ class ApiController
             'authorize'         => [$this->authService, 'authorize'],
             'verifyCustomer'           => [$this->authService, 'verifyAndActivateUser'],
             'getProducts'           => [$this->productService, 'getProducts'],
+            'facebookAuth'          => [$this->authService, 'facebookAuth'],
+            'googleAuth'            => [$this->authService, 'googleAuth'],
 
         ];
     }

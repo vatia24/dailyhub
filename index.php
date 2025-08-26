@@ -1,5 +1,14 @@
 <?php
 
+// Allow PHP built-in server to serve existing static files (e.g., /swagger/dist/*)
+if (PHP_SAPI === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $fullPath = __DIR__ . $path;
+    if (is_file($fullPath)) {
+        return false;
+    }
+}
+
 use Dotenv\Dotenv;
 use App\Controllers\ApiController;
 use App\Exceptions\ApiException;
@@ -11,7 +20,7 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 // Enable or disable error reporting dynamically based on the environment
-if ($_ENV['APP_ENV'] === 'development') {
+if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
     ini_set('display_errors', 1); // Show errors in development
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL); // Report all types of errors
@@ -56,7 +65,7 @@ try {
             $handler = $routeInfo[1];
             $vars = $routeInfo[2];
 
-            $method = ucfirst($vars['method']); // Extract method from URI
+            $method = $vars['method']; // Extract method from URI without changing case
             [$class, $action] = $handler;
 
             //dependency initialization for services
@@ -69,13 +78,13 @@ try {
             // Manually create required dependencies
             $authService = new \App\Services\AuthService($autModel, $authConfig);
             $userService = new \App\Services\UserService($userModel, $authService);
-            $productService = new \App\Services\ProductService($productModel);
+            $productService = new \App\Services\ProductService($productModel, $authService);
 
             // Create the instance of the controller with the required dependencies
             $controller = new $class($authService, $userService, $productService);
 
-            // Call the action
-            $controller->$action();
+            // Call the action with the method
+            $controller->$action($method);
             break;
 
     }
