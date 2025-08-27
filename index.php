@@ -78,10 +78,13 @@ try {
             // Manually create required dependencies
             $authService = new \App\Services\AuthService($autModel, $authConfig);
             $userService = new \App\Services\UserService($userModel, $authService);
-            $productService = new \App\Services\ProductService($productModel, $authService);
+            $productService = new \App\Services\ProductService($productModel, $authService, new \App\Models\CompanyModel());
+            $companyService = new \App\Services\CompanyService(new \App\Models\CompanyModel(), $authService);
+            $discountService = new \App\Services\DiscountService(new \App\Models\DiscountModel(), $authService, new \App\Models\CompanyModel());
+            $analyticsService = new \App\Services\AnalyticsService(new \App\Models\AnalyticsModel(), $authService);
 
             // Create the instance of the controller with the required dependencies
-            $controller = new $class($authService, $userService, $productService);
+            $controller = new $class($authService, $userService, $productService, $companyService, $discountService, $analyticsService);
 
             // Call the action with the method
             $controller->$action($method);

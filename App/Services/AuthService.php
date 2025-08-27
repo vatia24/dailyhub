@@ -203,7 +203,87 @@ class AuthService
             throw new ApiException(401, 'INVALID_TOKEN', 'Invalid or expired token');
         }
 
+        // Enforce server-side token presence (logout/revocation aware)
+        if (!$this->authModel->tokenExists($token)) {
+            throw new ApiException(401, 'INVALID_TOKEN', 'Token revoked or expired');
+        }
+
         return $decodedToken; // Return the token if valid
+    }
+
+    /**
+     * Invalidate JWT by storing/removing token (depending on blacklist strategy)
+     */
+    public function logout(): void
+    {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? null;
+        if (!$authHeader) return;
+        $token = str_replace('Bearer ', '', $authHeader);
+        // Option A: Delete from access_tokens (server-side sessions)
+        // Note: Implement a small model layer if needed; using PDO inline for brevity
+        $pdo = \Config\Db::getInstance();
+        $stmt = $pdo->prepare('DELETE FROM access_tokens WHERE token = :token');
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    /**
+     * Issue a password reset code and store temporarily
+     */
+    public function requestPasswordReset(array $data): array
+    {
+        if (empty($data['identifier'])) throw new ApiException(400, 'BAD_REQUEST', 'Identifier required');
+        $user = $this->authModel->findUserByMailOrNumber($data['identifier']);
+        if (!$user) throw new ApiException(404, 'NOT_FOUND', 'User not found');
+        $code = random_int(100000, 999999);
+        // Reuse otp_codes table as reset storage
+        $pdo = \Config\Db::getInstance();
+        $stmt = $pdo->prepare('INSERT INTO otp_codes (mobile, otp, created_at, is_used) VALUES (:mobile, :otp, NOW(), 0)');
+        $identifier = $data['identifier'];
+        $stmt->bindParam(':mobile', $identifier);
+        $stmt->bindParam(':otp', $code);
+        $stmt->execute();
+        $stmt->closeCursor();
+        // Send via SMS or email provider in real life
+        return ['reset_sent' => true];
+    }
+
+    /**
+     * Confirm reset code and set new password
+     */
+    public function confirmPasswordReset(array $data): array
+    {
+        if (empty($data['identifier']) || empty($data['otp']) || empty($data['new_password'])) {
+            throw new ApiException(400, 'BAD_REQUEST', 'Missing fields');
+        }
+        // validate code from otp_codes
+        $pdo = \Config\Db::getInstance();
+        $stmt = $pdo->prepare('SELECT id FROM otp_codes WHERE (mobile = :identifier) AND otp = :otp AND created_at >= NOW() - INTERVAL 10 MINUTE AND is_used = 0 ORDER BY created_at DESC LIMIT 1');
+        $stmt->bindParam(':identifier', $data['identifier']);
+        $stmt->bindParam(':otp', $data['otp']);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        if (!$row) throw new ApiException(400, 'INVALID_OTP', 'Invalid or expired code');
+
+        // set new password
+        $options = ['memory_cost' => 1 << 16, 'time_cost' => 4, 'threads' => 2];
+        $hash = password_hash($data['new_password'], PASSWORD_ARGON2ID, $options);
+        $stmt = $pdo->prepare('UPDATE users SET password = :pwd WHERE email = :identifier OR mobile = :identifier');
+        $stmt->bindParam(':pwd', $hash);
+        $stmt->bindParam(':identifier', $data['identifier']);
+        $stmt->execute();
+        $stmt->closeCursor();
+
+        // mark OTP used
+        $stmt = $pdo->prepare('UPDATE otp_codes SET is_used = 1 WHERE id = :id');
+        $stmt->bindParam(':id', $row['id']);
+        $stmt->execute();
+        $stmt->closeCursor();
+
+        return ['reset' => true];
     }
 
     /**

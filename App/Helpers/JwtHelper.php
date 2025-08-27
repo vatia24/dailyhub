@@ -24,14 +24,22 @@ class JwtHelper
             'data' => $data,               // Custom data (e.g., user info)
         ];
 
-        return JWT::encode($payload, self::getConfig()['jwt_secret_key'], 'HS256');
+        $key = (string) self::getConfig()['jwt_secret_key'];
+        if ($key === '' || $key === 'change-me') {
+            throw new \RuntimeException('JWT secret not configured');
+        }
+        return JWT::encode($payload, $key, 'HS256');
     }
 
     public static function validateToken($token): ?\stdClass
     {
 
         try {
-            return JWT::decode($token, new Key(self::getConfig()['jwt_secret_key'], 'HS256'));
+            $key = (string) self::getConfig()['jwt_secret_key'];
+            if ($key === '' || $key === 'change-me') {
+                return null;
+            }
+            return JWT::decode($token, new Key($key, 'HS256'));
         } catch (\Exception $e) {
             return null; // Or handle exception as necessary
         }

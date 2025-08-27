@@ -8,18 +8,27 @@ use App\Services\AuthService;
 use App\Services\UserService;
 use App\Services\ProductService;
 use App\Helpers\ResponseHelper;
+use App\Services\CompanyService;
+use App\Services\DiscountService;
+use App\Services\AnalyticsService;
 
 class ApiController
 {
     private AuthService $authService;
     private UserService $userService;
     private ProductService $productService;
+    private CompanyService $companyService;
+    private DiscountService $discountService;
+    private AnalyticsService $analyticsService;
 
-    public function __construct(AuthService $authService, UserService $userService, ProductService $productService)
+    public function __construct(AuthService $authService, UserService $userService, ProductService $productService, CompanyService $companyService, DiscountService $discountService, AnalyticsService $analyticsService)
     {
         $this->authService = $authService;
         $this->userService = $userService;
         $this->productService = $productService;
+        $this->companyService = $companyService;
+        $this->discountService = $discountService;
+        $this->analyticsService = $analyticsService;
     }
 
     public function handleRequest(string $method): void
@@ -61,14 +70,100 @@ class ApiController
     private function getMethodMap(): array
     {
         return [
-            'checkUserCredentials'  => [$this->userService, 'checkUserCredentials'],
-            'registerUser'         => [$this->userService, 'registerUser'],
-            'authorize'         => [$this->authService, 'authorize'],
-            'verifyCustomer'           => [$this->authService, 'verifyAndActivateUser'],
-            'getProducts'           => [$this->productService, 'getProducts'],
-            'facebookAuth'          => [$this->authService, 'facebookAuth'],
-            'googleAuth'            => [$this->authService, 'googleAuth'],
+            // Auth: login + account lifecycle
+            // POST /api/authorize { identifier, password }
+            'authorize'                 => [$this->authService, 'authorize'],
+            // POST /api/registerUser { username, name, email, mobile, password, type }
+            'registerUser'              => [$this->userService, 'registerUser'],
+            // POST /api/verifyCustomer { mobile, otp }
+            'verifyCustomer'            => [$this->authService, 'verifyAndActivateUser'],
+            // POST /api/logout (Bearer token)
+            'logout'                    => [$this->authService, 'logout'],
+            // Password reset
+            // POST /api/requestPasswordReset { identifier }
+            'requestPasswordReset'      => [$this->authService, 'requestPasswordReset'],
+            // POST /api/confirmPasswordReset { identifier, otp, new_password }
+            'confirmPasswordReset'      => [$this->authService, 'confirmPasswordReset'],
+            // Social OAuth callbacks (GET)
+            'facebookAuth'              => [$this->authService, 'facebookAuth'],
+            'googleAuth'                => [$this->authService, 'googleAuth'],
 
+            // Products: read-only quick list with discounts (legacy)
+            // GET /api/getProducts[?id=]
+            'getProducts'               => [$this->productService, 'getProducts'],
+            // Products: full management (RBAC Owner/Manager)
+            // GET /api/listProducts?company_id&status&q&limit&offset
+            'listProducts'              => [$this->productService, 'list'],
+            // POST /api/upsertProduct { id?, company_id, name, price, status, ... }
+            'upsertProduct'             => [$this->productService, 'upsert'],
+            // POST /api/deleteProduct { id }
+            'deleteProduct'             => [$this->productService, 'delete'],
+            // POST /api/bulkProductStatus { ids[], status }
+            'bulkProductStatus'         => [$this->productService, 'bulkStatus'],
+            // Product images
+            // POST /api/addProductImage { product_id, file_base64 }
+            'addProductImage'           => [$this->productService, 'addImage'],
+            // GET /api/listProductImages?product_id
+            'listProductImages'         => [$this->productService, 'listImages'],
+            // POST /api/deleteProductImage { image_id }
+            'deleteProductImage'        => [$this->productService, 'deleteImage'],
+
+            // Company: profile + RBAC
+            // POST /api/upsertCompany { id?, full_name, address, ... }
+            'upsertCompany'             => [$this->companyService, 'upsertCompany'],
+            // GET /api/getCompany?id
+            'getCompany'                => [$this->companyService, 'getCompany'],
+            // POST /api/setCompanyStatus { company_id, status }
+            'setCompanyStatus'          => [$this->companyService, 'setStatus'],
+            // Hours
+            // POST /api/setCompanyHours { company_id, hours:[{day_of_week,open_time,close_time,is_closed}] }
+            'setCompanyHours'           => [$this->companyService, 'setHours'],
+            // GET /api/getCompanyHours?company_id
+            'getCompanyHours'           => [$this->companyService, 'getHours'],
+            // Socials
+            // POST /api/addCompanySocial { company_id, platform, url }
+            'addCompanySocial'          => [$this->companyService, 'addSocial'],
+            // GET /api/listCompanySocials?company_id
+            'listCompanySocials'        => [$this->companyService, 'listSocials'],
+            // POST /api/deleteCompanySocial { company_id, id }
+            'deleteCompanySocial'       => [$this->companyService, 'deleteSocial'],
+            // Gallery
+            // POST /api/addCompanyGallery { company_id, file_base64 }
+            'addCompanyGallery'         => [$this->companyService, 'addGallery'],
+            // GET /api/listCompanyGallery?company_id
+            'listCompanyGallery'        => [$this->companyService, 'listGallery'],
+            // POST /api/deleteCompanyGallery { company_id, id }
+            'deleteCompanyGallery'      => [$this->companyService, 'deleteGallery'],
+            // Documents (verification)
+            // POST /api/addCompanyDocument { company_id, doc_type, file_base64 }
+            'addCompanyDocument'        => [$this->companyService, 'addDocument'],
+            // GET /api/listCompanyDocuments?company_id
+            'listCompanyDocuments'      => [$this->companyService, 'listDocuments'],
+            // POST /api/reviewCompanyDocument { company_id, id, status }
+            'reviewCompanyDocument'     => [$this->companyService, 'reviewDocument'],
+            // Delivery zones
+            // POST /api/upsertDeliveryZone { id?, company_id, name, zone_type, center_lat, center_lng, radius_m, polygon }
+            'upsertDeliveryZone'        => [$this->companyService, 'upsertZone'],
+            // GET /api/listDeliveryZones?company_id
+            'listDeliveryZones'         => [$this->companyService, 'listZones'],
+            // POST /api/deleteDeliveryZone { company_id, id }
+            'deleteDeliveryZone'        => [$this->companyService, 'deleteZone'],
+
+            // Discounts
+            // GET /api/listDiscounts
+            'listDiscounts'             => [$this->discountService, 'list'],
+            // POST /api/upsertDiscount { id?, company_id, product_id, ... }
+            'upsertDiscount'            => [$this->discountService, 'upsert'],
+            // POST /api/bulkDiscountStatus { ids[], status }
+            'bulkDiscountStatus'        => [$this->discountService, 'bulkStatus'],
+
+            // Analytics
+            // POST /api/trackAction { discount_id, action, ... }
+            'trackAction'               => [$this->analyticsService, 'track'],
+            // GET /api/analyticsSummary?discount_id
+            'analyticsSummary'          => [$this->analyticsService, 'summary'],
+            // GET /api/topDiscounts?action&limit
+            'topDiscounts'              => [$this->analyticsService, 'top'],
         ];
     }
 

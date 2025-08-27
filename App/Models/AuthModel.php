@@ -78,4 +78,14 @@ class AuthModel
         $stmt->closeCursor();
     }
 
+    public function tokenExists(string $token): bool
+    {
+        $stmt = $this->db->prepare('SELECT 1 FROM access_tokens WHERE token = :token AND expires_at > NOW() LIMIT 1');
+        $stmt->bindParam(':token', $token);
+        $stmt->execute();
+        $exists = (bool)$stmt->fetchColumn();
+        $stmt->closeCursor();
+        return $exists;
+    }
+
 }

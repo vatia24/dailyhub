@@ -17,7 +17,8 @@ class ProductModel
     }
 
     /**
-     * Fetch all products with their discounts.
+     * Fetch all products with their latest active discount (if any).
+     * Adds aliased discount fields and computed effective_price.
      *
      * @return array
      * @throws Exception
@@ -26,9 +27,35 @@ class ProductModel
     {
         try {
             $statement = $this->db->prepare(
-                'SELECT p.*, d.*
+                'SELECT 
+                    p.*,
+                    d.id AS discount_id,
+                    d.discount_price,
+                    d.discount_percent,
+                    d.start_date AS discount_start_date,
+                    d.end_date AS discount_end_date,
+                    d.status AS discount_status,
+                    d.created_at AS discount_created_at,
+                    d.updated_at AS discount_updated_at,
+                    CASE 
+                        WHEN d.discount_price IS NOT NULL THEN d.discount_price
+                        WHEN d.discount_percent IS NOT NULL THEN ROUND(p.price * (1 - d.discount_percent/100), 2)
+                        ELSE p.price
+                    END AS effective_price
                  FROM product p
-                 LEFT JOIN discount d ON p.id = d.product_id'
+                 LEFT JOIN discount d 
+                   ON d.product_id = p.id
+                  AND d.status = "active"
+                  AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                  AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                  AND d.updated_at = (
+                        SELECT MAX(d2.updated_at) 
+                        FROM discount d2 
+                        WHERE d2.product_id = p.id 
+                          AND d2.status = "active"
+                          AND (d2.start_date IS NULL OR d2.start_date <= CURDATE())
+                          AND (d2.end_date IS NULL OR d2.end_date >= CURDATE())
+                  )'
             );
             $statement->execute();
 
@@ -39,7 +66,8 @@ class ProductModel
     }
 
     /**
-     * Fetch a single product by ID with its discount.
+     * Fetch a single product by ID with its latest active discount.
+     * Adds aliased discount fields and computed effective_price.
      *
      * @param int $productId
      * @return array|null
@@ -49,9 +77,35 @@ class ProductModel
     {
         try {
             $statement = $this->db->prepare(
-                'SELECT p.*, d.*
+                'SELECT 
+                    p.*,
+                    d.id AS discount_id,
+                    d.discount_price,
+                    d.discount_percent,
+                    d.start_date AS discount_start_date,
+                    d.end_date AS discount_end_date,
+                    d.status AS discount_status,
+                    d.created_at AS discount_created_at,
+                    d.updated_at AS discount_updated_at,
+                    CASE 
+                        WHEN d.discount_price IS NOT NULL THEN d.discount_price
+                        WHEN d.discount_percent IS NOT NULL THEN ROUND(p.price * (1 - d.discount_percent/100), 2)
+                        ELSE p.price
+                    END AS effective_price
                  FROM product p
-                 LEFT JOIN discount d ON p.id = d.product_id
+                 LEFT JOIN discount d 
+                   ON d.product_id = p.id
+                  AND d.status = "active"
+                  AND (d.start_date IS NULL OR d.start_date <= CURDATE())
+                  AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                  AND d.updated_at = (
+                        SELECT MAX(d2.updated_at) 
+                        FROM discount d2 
+                        WHERE d2.product_id = p.id 
+                          AND d2.status = "active"
+                          AND (d2.start_date IS NULL OR d2.start_date <= CURDATE())
+                          AND (d2.end_date IS NULL OR d2.end_date >= CURDATE())
+                  )
                  WHERE p.id = :productId'
             );
             $statement->bindParam(':productId', $productId, PDO::PARAM_INT);
