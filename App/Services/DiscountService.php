@@ -40,10 +40,20 @@ class DiscountService
         if (!in_array($role, ['Owner','Manager'], true)) {
             throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
         }
-        // basic validation: one of price or percent must be provided
-        if ((empty($data['discount_price']) && empty($data['discount_percent'])) ||
-            (!empty($data['discount_price']) && !empty($data['discount_percent']))) {
-            throw new ApiException(400, 'BAD_REQUEST', 'Provide either discount_price or discount_percent');
+        // New rule: clients should provide percent only; price is computed
+        if (array_key_exists('discount_price', $data)) {
+            unset($data['discount_price']);
+        }
+        if (empty($data['id'])) {
+            if (!isset($data['discount_percent'])) {
+                throw new ApiException(400, 'BAD_REQUEST', 'Provide discount_percent');
+            }
+        }
+        if (isset($data['discount_percent'])) {
+            $percent = (float)$data['discount_percent'];
+            if ($percent <= 0 || $percent > 100) {
+                throw new ApiException(400, 'BAD_REQUEST', 'discount_percent must be between 0 and 100');
+            }
         }
         $id = $this->discountModel->upsert($data);
         return ['id' => $id];

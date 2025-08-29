@@ -91,6 +91,8 @@ class ApiController
             // Products: read-only quick list with discounts (legacy)
             // GET /api/getProducts[?id=]
             'getProducts'               => [$this->productService, 'getProducts'],
+            // GET /api/getProduct?id=
+            'getProduct'                => [$this->productService, 'getProduct'],
             // Products: full management (RBAC Owner/Manager)
             // GET /api/listProducts?company_id&status&q&limit&offset
             'listProducts'              => [$this->productService, 'list'],
@@ -148,6 +150,22 @@ class ApiController
             'listDeliveryZones'         => [$this->companyService, 'listZones'],
             // POST /api/deleteDeliveryZone { company_id, id }
             'deleteDeliveryZone'        => [$this->companyService, 'deleteZone'],
+
+            // Branches
+            // POST /api/upsertBranch { id?, company_id, branch_name, branch_address, branch_image }
+            'upsertBranch'              => [$this->companyService, 'upsertBranch'],
+            // GET /api/listBranches?company_id
+            'listBranches'              => [$this->companyService, 'listBranches'],
+            // POST /api/deleteBranch { company_id, id }
+            'deleteBranch'              => [$this->companyService, 'deleteBranch'],
+
+            // Contacts
+            // POST /api/addContact { company_id, phone?, email?, address? }
+            'addContact'                => [$this->companyService, 'addContact'],
+            // GET /api/listContacts?company_id
+            'listContacts'              => [$this->companyService, 'listContacts'],
+            // POST /api/deleteContact { company_id, id }
+            'deleteContact'             => [$this->companyService, 'deleteContact'],
 
             // Discounts
             // GET /api/listDiscounts

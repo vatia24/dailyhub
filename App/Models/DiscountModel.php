@@ -107,39 +107,94 @@ class DiscountModel
     public function upsert(array $data): int
     {
         $isUpdate = !empty($data['id']);
+
+        // Compute discount_price (money off) from product.price and discount_percent
+        $computedDiscountAmount = null;
+        $hasPercent = array_key_exists('discount_percent', $data);
+        $targetProductId = $data['product_id'] ?? null;
+        if ($isUpdate && !$targetProductId) {
+            // If updating and product_id not provided, lookup current product_id
+            $stmtFind = $this->db->prepare('SELECT product_id FROM discount WHERE id = :id');
+            $stmtFind->bindValue(':id', (int)$data['id'], PDO::PARAM_INT);
+            $stmtFind->execute();
+            $row = $stmtFind->fetch(PDO::FETCH_ASSOC);
+            $stmtFind->closeCursor();
+            if ($row) {
+                $targetProductId = (int)$row['product_id'];
+            }
+        }
+        if ($hasPercent && $targetProductId) {
+            $stmtPrice = $this->db->prepare('SELECT price FROM product WHERE id = :pid');
+            $stmtPrice->bindValue(':pid', (int)$targetProductId, PDO::PARAM_INT);
+            $stmtPrice->execute();
+            $price = $stmtPrice->fetchColumn();
+            $stmtPrice->closeCursor();
+            if ($price !== false && $price !== null && $price !== '') {
+                $computedDiscountAmount = round(((float)$price) * ((float)$data['discount_percent']) / 100, 2);
+            }
+        }
+
         if ($isUpdate) {
-            $stmt = $this->db->prepare('UPDATE discount SET user_id=:user_id, company_id=:company_id, product_id=:product_id, discount_price=:discount_price, discount_percent=:discount_percent, start_date=:start_date, end_date=:end_date, status=:status WHERE id=:id');
+            // Partial update: only bind and set provided fields
+            $allowed = ['user_id','company_id','product_id','discount_percent','start_date','end_date','status'];
+            $setParts = [];
+            foreach ($allowed as $col) {
+                if (array_key_exists($col, $data)) {
+                    $setParts[] = "$col = :$col";
+                }
+            }
+            if ($computedDiscountAmount !== null) {
+                $setParts[] = 'discount_price = :discount_price';
+            }
+            if (empty($setParts)) {
+                return (int)$data['id'];
+            }
+            $sql = 'UPDATE discount SET ' . implode(', ', $setParts) . ' WHERE id = :id';
+            $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':id', (int)$data['id'], PDO::PARAM_INT);
         } else {
             $stmt = $this->db->prepare('INSERT INTO discount (user_id, company_id, product_id, discount_price, discount_percent, start_date, end_date, status) VALUES (:user_id, :company_id, :product_id, :discount_price, :discount_percent, :start_date, :end_date, :status)');
         }
 
-        $stmt->bindValue(':user_id', (int)$data['user_id'], PDO::PARAM_INT);
-        $stmt->bindValue(':company_id', (int)$data['company_id'], PDO::PARAM_INT);
-        $stmt->bindValue(':product_id', (int)$data['product_id'], PDO::PARAM_INT);
+        // Bind values depending on insert or update (partial)
+        $bindIfPresent = function(string $name) use ($stmt, $data) {
+            if (!array_key_exists($name, $data)) return;
+            $param = ":$name";
+            $value = $data[$name];
+            if (in_array($name, ['user_id','company_id','product_id'])) {
+                $stmt->bindValue($param, (int)$value, PDO::PARAM_INT);
+                return;
+            }
+            if (in_array($name, ['discount_price','discount_percent'])) {
+                if ($value === null || $value === '') {
+                    $stmt->bindValue($param, null, PDO::PARAM_NULL);
+                } else {
+                    $stmt->bindValue($param, $value);
+                }
+                return;
+            }
+            if (in_array($name, ['start_date','end_date'])) {
+                if (empty($value)) {
+                    $stmt->bindValue($param, null, PDO::PARAM_NULL);
+                } else {
+                    $stmt->bindValue($param, $value);
+                }
+                return;
+            }
+            if ($name === 'status') {
+                $stmt->bindValue($param, (string)$value);
+            }
+        };
 
-        // Nullable numerics/dates
-        if (array_key_exists('discount_price', $data) && $data['discount_price'] !== null && $data['discount_price'] !== '') {
-            $stmt->bindValue(':discount_price', $data['discount_price']);
-        } else {
+        foreach (['user_id','company_id','product_id','discount_percent','start_date','end_date','status'] as $field) {
+            $bindIfPresent($field);
+        }
+        // Bind computed discount_price if available, or null on insert
+        if ($computedDiscountAmount !== null) {
+            $stmt->bindValue(':discount_price', (string)$computedDiscountAmount);
+        } elseif (!$isUpdate) {
             $stmt->bindValue(':discount_price', null, PDO::PARAM_NULL);
         }
-        if (array_key_exists('discount_percent', $data) && $data['discount_percent'] !== null && $data['discount_percent'] !== '') {
-            $stmt->bindValue(':discount_percent', $data['discount_percent']);
-        } else {
-            $stmt->bindValue(':discount_percent', null, PDO::PARAM_NULL);
-        }
-        if (!empty($data['start_date'])) {
-            $stmt->bindValue(':start_date', $data['start_date']);
-        } else {
-            $stmt->bindValue(':start_date', null, PDO::PARAM_NULL);
-        }
-        if (!empty($data['end_date'])) {
-            $stmt->bindValue(':end_date', $data['end_date']);
-        } else {
-            $stmt->bindValue(':end_date', null, PDO::PARAM_NULL);
-        }
-        $stmt->bindValue(':status', (string)$data['status']);
 
         $stmt->execute();
         $stmt->closeCursor();

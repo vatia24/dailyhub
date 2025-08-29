@@ -66,14 +66,14 @@ class AuthModel
         return $result;
     }
 
-    public function storeAccessToken($user_id, $token, $expires_at): void
+    public function storeAccessToken($user_id, $token, $expires_in_seconds): void
     {
-
-        $query = 'INSERT INTO access_tokens (user_id, token, created_at, expires_at) VALUES (:user_id, :token, NOW(), :expires_at)';
+        // Compute expiry from DB server time to avoid app/DB timezone drift
+        $query = 'INSERT INTO access_tokens (user_id, token, created_at, expires_at) VALUES (:user_id, :token, NOW(), DATE_ADD(NOW(), INTERVAL :expires_seconds SECOND))';
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->bindParam(':token', $token);
-        $stmt->bindParam(':expires_at', $expires_at);
+        $stmt->bindParam(':expires_seconds', $expires_in_seconds, PDO::PARAM_INT);
         $stmt->execute();
         $stmt->closeCursor();
     }

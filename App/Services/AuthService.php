@@ -178,8 +178,11 @@ class AuthService
         // Generate JWT Token
         $token = JwtHelper::generateToken(['id' => $user['id'], 'identifier' => $data['identifier'], 'role' => $user['user_type']]);
 
-        $this->authModel->storeAccessToken($user['id'], $token, date('Y-m-d H:i:s',
-            time() + $this->authConfig['jwt_expiration']));
+        $this->authModel->storeAccessToken(
+            $user['id'],
+            $token,
+            (int) $this->authConfig['jwt_expiration']
+        );
 
         return ['token' => $token];
     }

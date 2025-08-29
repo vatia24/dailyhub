@@ -4,16 +4,19 @@ namespace App\Services;
 
 use App\Exceptions\ApiException;
 use App\Models\CompanyModel;
+use App\Models\BranchModel;
 
 class CompanyService
 {
     private CompanyModel $companyModel;
     private AuthService $authService;
+    private BranchModel $branchModel;
 
     public function __construct(CompanyModel $companyModel, AuthService $authService)
     {
         $this->companyModel = $companyModel;
         $this->authService = $authService;
+        $this->branchModel = new BranchModel();
     }
 
     /**
@@ -192,6 +195,72 @@ class CompanyService
         $role = $this->companyModel->getUserRoleForCompany($token->data->id, (int)$data['company_id']);
         if (!in_array($role, ['Owner','Manager'], true)) throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
         $this->companyModel->deleteZone((int)$data['id']);
+        return ['deleted' => true];
+    }
+
+    /**
+     * Branches CRUD (partial updates supported in model)
+     * @throws ApiException
+     */
+    public function upsertBranch(array $data): array
+    {
+        $token = $this->authService->authorizeRequest();
+        $role = $this->companyModel->getUserRoleForCompany($token->data->id, (int)$data['company_id']);
+        if (!in_array($role, ['Owner','Manager'], true)) throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
+        $id = $this->branchModel->upsertBranch($data);
+        return ['id' => $id];
+    }
+
+    public function listBranches(array $data): array
+    {
+        $this->authService->authorizeRequest();
+        $companyId = (int)$data['company_id'];
+        $stmt = $this->companyModel; // alias
+        // Reuse generic list from DB
+        $rows = $this->companyModel->listBranches($companyId);
+        return ['branches' => $rows];
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function deleteBranch(array $data): array
+    {
+        $token = $this->authService->authorizeRequest();
+        $role = $this->companyModel->getUserRoleForCompany($token->data->id, (int)$data['company_id']);
+        if (!in_array($role, ['Owner','Manager'], true)) throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
+        $this->companyModel->deleteBranch((int)$data['id']);
+        return ['deleted' => true];
+    }
+
+    /**
+     * Company contacts CRUD
+     * @throws ApiException
+     */
+    public function addContact(array $data): array
+    {
+        $token = $this->authService->authorizeRequest();
+        $role = $this->companyModel->getUserRoleForCompany($token->data->id, (int)$data['company_id']);
+        if (!in_array($role, ['Owner','Manager'], true)) throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
+        $id = $this->companyModel->addContact((int)$token->data->id, (int)$data['company_id'], $data['phone'] ?? null, $data['email'] ?? null, $data['address'] ?? null);
+        return ['id' => $id];
+    }
+
+    public function listContacts(array $data): array
+    {
+        $this->authService->authorizeRequest();
+        return ['contacts' => $this->companyModel->listContacts((int)$data['company_id'])];
+    }
+
+    /**
+     * @throws ApiException
+     */
+    public function deleteContact(array $data): array
+    {
+        $token = $this->authService->authorizeRequest();
+        $role = $this->companyModel->getUserRoleForCompany($token->data->id, (int)$data['company_id']);
+        if (!in_array($role, ['Owner','Manager'], true)) throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
+        $this->companyModel->deleteContact((int)$data['id']);
         return ['deleted' => true];
     }
 }

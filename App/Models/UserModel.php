@@ -79,12 +79,27 @@ class UserModel
 
     public function updateUser(array $data): void
     {
-        $query = 'UPDATE users SET name = :name, email = :email, mobile = :mobile WHERE id = :id';
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':mobile', $data['mobile']);
-        $stmt->bindParam(':id', $data['id']);
+        // Partial update for users
+        $allowed = ['name','email','mobile','user_type','status'];
+        $set = [];
+        foreach ($allowed as $col) {
+            if (array_key_exists($col, $data)) {
+                $set[] = "$col = :$col";
+            }
+        }
+        if (empty($set)) return;
+        $sql = 'UPDATE users SET ' . implode(', ', $set) . ' WHERE id = :id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', (int)$data['id'], PDO::PARAM_INT);
+        foreach ($allowed as $col) {
+            if (!array_key_exists($col, $data)) continue;
+            $val = $data[$col];
+            if ($val === null) {
+                $stmt->bindValue(":$col", null, PDO::PARAM_NULL);
+            } else {
+                $stmt->bindValue(":$col", (string)$val, PDO::PARAM_STR);
+            }
+        }
         $stmt->execute();
         $stmt->closeCursor();
     }

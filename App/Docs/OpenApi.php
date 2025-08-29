@@ -12,8 +12,8 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @OA\Server(
- *     url="http://127.0.0.1:8000",
- *     description="Local server"
+ *     url="/",
+ *     description="Current origin"
  * )
  */
 class OpenApi
@@ -199,6 +199,20 @@ class PasswordResetConfirmPaths
 class ProductPaths
 {
 }
+
+/**
+ * @OA\Get(
+ *     path="/api/getProduct",
+ *     summary="Get a single product by id with active discount",
+ *     tags={"products"},
+ *     security={{"bearerAuth": {}}},
+ *     @OA\Parameter(name="id", in="query", required=true, @OA\Schema(type="integer")),
+ *     @OA\Response(response=200, description="OK"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=404, description="Not found")
+ * )
+ */
+class ProductGetPaths{}
 
 /**
  * @OA\Get(

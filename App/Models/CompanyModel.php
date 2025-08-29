@@ -26,21 +26,71 @@ class CompanyModel
 
     public function upsertCompany(array $data): int
     {
+        // Allowed columns in companies table
+        $allowed = [
+            'full_name', 'address', 'city', 'postal_code', 'country', 'status',
+            'latitude', 'longitude', 'logo_url'
+        ];
+
         if (!empty($data['id'])) {
-            $stmt = $this->db->prepare('UPDATE companies SET full_name=:full_name, address=:address, city=:city, postal_code=:postal_code, country=:country WHERE id=:id');
-            $stmt->bindParam(':id', $data['id']);
-        } else {
-            $stmt = $this->db->prepare('INSERT INTO companies (user_id, full_name, address, city, postal_code, country) VALUES (:user_id, :full_name, :address, :city, :postal_code, :country)');
-            $stmt->bindParam(':user_id', $data['user_id']);
+            // Partial update: only update provided fields
+            $setParts = [];
+            foreach ($allowed as $col) {
+                if (array_key_exists($col, $data)) {
+                    $setParts[] = "$col = :$col";
+                }
+            }
+            if (empty($setParts)) {
+                return (int)$data['id'];
+            }
+            $sql = 'UPDATE companies SET ' . implode(', ', $setParts) . ' WHERE id = :id';
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':id', (int)$data['id'], PDO::PARAM_INT);
+
+            foreach ($allowed as $col) {
+                if (!array_key_exists($col, $data)) continue;
+                $value = $data[$col];
+                if ($value === null) {
+                    $stmt->bindValue(":$col", null, PDO::PARAM_NULL);
+                } else {
+                    $paramType = in_array($col, ['latitude','longitude']) ? PDO::PARAM_STR : PDO::PARAM_STR;
+                    $stmt->bindValue(":$col", (string)$value, $paramType);
+                }
+            }
+            $stmt->execute();
+            $stmt->closeCursor();
+            return (int)$data['id'];
         }
-        $stmt->bindParam(':full_name', $data['full_name']);
-        $stmt->bindParam(':address', $data['address']);
-        $stmt->bindParam(':city', $data['city']);
-        $stmt->bindParam(':postal_code', $data['postal_code']);
-        $stmt->bindParam(':country', $data['country']);
+
+        // Insert: require user_id and full_name at minimum
+        $columns = ['user_id', 'full_name'];
+        $placeholders = [':user_id', ':full_name'];
+        $bindings = [
+            [':user_id', (int)$data['user_id'], PDO::PARAM_INT],
+            [':full_name', (string)($data['full_name'] ?? ''), PDO::PARAM_STR],
+        ];
+
+        foreach ($allowed as $col) {
+            if (!array_key_exists($col, $data)) continue;
+            $columns[] = $col;
+            $placeholders[] = ":$col";
+            $val = $data[$col];
+            if ($val === null) {
+                $bindings[] = [":$col", null, PDO::PARAM_NULL];
+            } else {
+                $paramType = in_array($col, ['latitude','longitude']) ? PDO::PARAM_STR : PDO::PARAM_STR;
+                $bindings[] = [":$col", (string)$val, $paramType];
+            }
+        }
+
+        $sql = 'INSERT INTO companies (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $placeholders) . ')';
+        $stmt = $this->db->prepare($sql);
+        foreach ($bindings as [$name, $val, $type]) {
+            $stmt->bindValue($name, $val, $type);
+        }
         $stmt->execute();
         $stmt->closeCursor();
-        return (int)($data['id'] ?? $this->db->lastInsertId());
+        return (int)$this->db->lastInsertId();
     }
 
     public function getUserRoleForCompany(int $userId, int $companyId): ?string
@@ -199,19 +249,42 @@ class CompanyModel
     {
         $isUpdate = !empty($data['id']);
         if ($isUpdate) {
-            $stmt = $this->db->prepare('UPDATE delivery_zones SET name=:name, zone_type=:zone_type, center_lat=:center_lat, center_lng=:center_lng, radius_m=:radius_m, polygon=:polygon WHERE id=:id AND company_id=:cid');
-            $stmt->bindParam(':id', $data['id']);
-            $stmt->bindParam(':cid', $data['company_id']);
+            // Partial update for delivery zone
+            $allowed = ['name','zone_type','center_lat','center_lng','radius_m','polygon'];
+            $set = [];
+            foreach ($allowed as $col) {
+                if (array_key_exists($col, $data)) {
+                    $set[] = "$col = :$col";
+                }
+            }
+            if (empty($set)) {
+                return (int)$data['id'];
+            }
+            $sql = 'UPDATE delivery_zones SET ' . implode(', ', $set) . ' WHERE id=:id AND company_id=:cid';
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':id', (int)$data['id'], PDO::PARAM_INT);
+            $stmt->bindValue(':cid', (int)$data['company_id'], PDO::PARAM_INT);
+            foreach ($allowed as $col) {
+                if (!array_key_exists($col, $data)) continue;
+                $val = $data[$col];
+                if ($val === null) {
+                    $stmt->bindValue(":$col", null, PDO::PARAM_NULL);
+                } else {
+                    $stmt->bindValue(":$col", (string)$val, PDO::PARAM_STR);
+                }
+            }
         } else {
             $stmt = $this->db->prepare('INSERT INTO delivery_zones (company_id, name, zone_type, center_lat, center_lng, radius_m, polygon) VALUES (:company_id, :name, :zone_type, :center_lat, :center_lng, :radius_m, :polygon)');
         }
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':zone_type', $data['zone_type']);
-        $stmt->bindParam(':center_lat', $data['center_lat']);
-        $stmt->bindParam(':center_lng', $data['center_lng']);
-        $stmt->bindParam(':radius_m', $data['radius_m']);
-        $stmt->bindParam(':polygon', $data['polygon']);
-        if (!$isUpdate) { $stmt->bindParam(':company_id', $data['company_id']); }
+        if (!$isUpdate) {
+            $stmt->bindParam(':company_id', $data['company_id']);
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':zone_type', $data['zone_type']);
+            $stmt->bindParam(':center_lat', $data['center_lat']);
+            $stmt->bindParam(':center_lng', $data['center_lng']);
+            $stmt->bindParam(':radius_m', $data['radius_m']);
+            $stmt->bindParam(':polygon', $data['polygon']);
+        }
         $stmt->execute();
         $stmt->closeCursor();
         return $isUpdate ? (int)$data['id'] : (int)$this->db->lastInsertId();
@@ -230,6 +303,57 @@ class CompanyModel
     public function deleteZone(int $id): void
     {
         $stmt = $this->db->prepare('DELETE FROM delivery_zones WHERE id = :id');
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    // Branch helpers (list/delete)
+    public function listBranches(int $companyId): array
+    {
+        $stmt = $this->db->prepare('SELECT id, branch_name, branch_address, branch_image FROM company_branches WHERE company_id = :cid ORDER BY id');
+        $stmt->bindParam(':cid', $companyId);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $rows;
+    }
+
+    public function deleteBranch(int $id): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM company_branches WHERE id = :id');
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    // Contacts
+    public function addContact(int $userId, int $companyId, ?string $phone, ?string $email, ?string $address): int
+    {
+        $stmt = $this->db->prepare('INSERT INTO contact (user_id, company_id, phone, email, address) VALUES (:uid, :cid, :phone, :email, :address)');
+        $stmt->bindParam(':uid', $userId);
+        $stmt->bindParam(':cid', $companyId);
+        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':address', $address);
+        $stmt->execute();
+        $stmt->closeCursor();
+        return (int)$this->db->lastInsertId();
+    }
+
+    public function listContacts(int $companyId): array
+    {
+        $stmt = $this->db->prepare('SELECT id, phone, email, address, created_at FROM contact WHERE company_id = :cid ORDER BY id DESC');
+        $stmt->bindParam(':cid', $companyId);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $rows;
+    }
+
+    public function deleteContact(int $id): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM contact WHERE id = :id');
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         $stmt->closeCursor();

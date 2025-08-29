@@ -45,6 +45,25 @@ class ProductService
     }
 
     /**
+     * Get a single product by id with its active discount (if any).
+     *
+     * @throws ApiException
+     */
+    public function getProduct(array $data): array
+    {
+        $this->authService->authorizeRequest();
+        $id = (int)($data['id'] ?? 0);
+        if ($id <= 0) {
+            throw new ApiException(400, 'BAD_REQUEST', 'id is required');
+        }
+        $product = $this->productModel->getProductWithDiscountById($id);
+        if (!$product) {
+            throw new ApiException(404, 'NOT_FOUND', 'Product not found');
+        }
+        return ['product' => $product];
+    }
+
+    /**
      * @throws ApiException
      */
     public function upsert(array $data): array
@@ -56,7 +75,11 @@ class ProductService
         if (!in_array($role, ['Owner','Manager'], true)) {
             throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
         }
-        $id = $this->productModel->upsertProduct($data);
+        $payload = $data;
+        if (empty($payload['id'])) {
+            $payload['user_id'] = (int)$userId;
+        }
+        $id = $this->productModel->upsertProduct($payload);
         return ['id' => $id];
     }
 

@@ -63,7 +63,19 @@ class AnalyticsModel
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
-        return $rows;
+        // Compute CTR = clicked / view if both present
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r['action']] = (int)$r['total'];
+        }
+        $ctr = null;
+        if (isset($map['view']) && $map['view'] > 0 && isset($map['clicked'])) {
+            $ctr = round($map['clicked'] / $map['view'], 4);
+        }
+        return [
+            'by_action' => $rows,
+            'ctr' => $ctr,
+        ];
     }
 
     /**
