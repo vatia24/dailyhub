@@ -87,10 +87,14 @@ class ApiController
             // Social OAuth callbacks (GET)
             'facebookAuth'              => [$this->authService, 'facebookAuth'],
             'googleAuth'                => [$this->authService, 'googleAuth'],
+            // Token refresh (POST)
+            'refresh'                   => [$this->authService, 'refresh'],
 
             // Products: read-only quick list with discounts (legacy)
             // GET /api/getProducts[?id=]
             'getProducts'               => [$this->productService, 'getProducts'],
+            // GET /api/getProductsWithDiscounts[?id=]
+            'getProductsWithDiscounts' => [$this->productService, 'getProducts'],
             // GET /api/getProduct?id=
             'getProduct'                => [$this->productService, 'getProduct'],
             // Products: full management (RBAC Owner/Manager)

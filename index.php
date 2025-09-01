@@ -20,12 +20,33 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 // CORS headers
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
-header('Access-Control-Allow-Origin: ' . $origin);
-header('Vary: Origin');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = array_filter(array_map('trim', explode(',', (string)($_ENV['ALLOWED_ORIGINS'] ?? ''))));
+$isDev = (($_ENV['APP_ENV'] ?? 'production') === 'development');
+// If credentials are needed, cannot use '*'; echo back the request origin when allowed
+if ($origin && ($isDev || in_array($origin, $allowedOrigins, true))) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Max-Age: 600');
+} elseif ($isDev && !$origin) {
+    // Dev fallback without credentials
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+}
+
+// Security headers (for dynamic API responses)
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
+header("X-Frame-Options: DENY");
+// Only set HSTS on HTTPS in production
+if (!$isDev && ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'))) {
+    header('Strict-Transport-Security: max-age=15552000; includeSubDomains');
+}
 
 // Handle CORS preflight early
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {

@@ -26,14 +26,19 @@ class CompanyService
     {
         $token = $this->authService->authorizeRequest();
         $userId = $token->data->id;
-        $data['user_id'] = $userId;
-        if (!empty($data['id'])) {
-            $role = $this->companyModel->getUserRoleForCompany($userId, (int)$data['id']);
+        $payload = $data;
+        unset($payload['user_id']);
+
+        if (!empty($payload['id'])) {
+            $role = $this->companyModel->getUserRoleForCompany($userId, (int)$payload['id']);
             if (!in_array($role, ['Owner','Manager'], true)) {
                 throw new ApiException(403, 'FORBIDDEN', 'Insufficient permissions');
             }
+            // Prevent tenant switch via update
+            if (isset($payload['user_id'])) unset($payload['user_id']);
         }
-        $id = $this->companyModel->upsertCompany($data);
+        $payload['user_id'] = $userId;
+        $id = $this->companyModel->upsertCompany($payload);
         return ['id' => $id];
     }
 

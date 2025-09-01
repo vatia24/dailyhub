@@ -206,6 +206,15 @@ class CompanyModel
 
     public function deleteGallery(int $id): void
     {
+        // Lookup path to unlink file before deleting record
+        $find = $this->db->prepare('SELECT path FROM company_gallery WHERE id = :id');
+        $find->bindParam(':id', $id);
+        $find->execute();
+        $row = $find->fetch(PDO::FETCH_ASSOC);
+        $find->closeCursor();
+        if ($row && !empty($row['path'])) {
+            @unlink($row['path']);
+        }
         $stmt = $this->db->prepare('DELETE FROM company_gallery WHERE id = :id');
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -240,6 +249,24 @@ class CompanyModel
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':rid', $reviewerId);
         $stmt->bindParam(':id', $docId);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+
+    public function deleteDocument(int $id): void
+    {
+        // Unlink file from disk, then delete DB row
+        $find = $this->db->prepare('SELECT path FROM company_documents WHERE id = :id');
+        $find->bindParam(':id', $id);
+        $find->execute();
+        $row = $find->fetch(PDO::FETCH_ASSOC);
+        $find->closeCursor();
+        if ($row && !empty($row['path'])) {
+            @unlink($row['path']);
+        }
+
+        $stmt = $this->db->prepare('DELETE FROM company_documents WHERE id = :id');
+        $stmt->bindParam(':id', $id);
         $stmt->execute();
         $stmt->closeCursor();
     }
@@ -321,6 +348,15 @@ class CompanyModel
 
     public function deleteBranch(int $id): void
     {
+        // Attempt to unlink branch image if present
+        $q = $this->db->prepare('SELECT branch_image FROM company_branches WHERE id = :id');
+        $q->bindParam(':id', $id);
+        $q->execute();
+        $img = $q->fetch(PDO::FETCH_ASSOC);
+        $q->closeCursor();
+        if ($img && !empty($img['branch_image'])) {
+            @unlink($img['branch_image']);
+        }
         $stmt = $this->db->prepare('DELETE FROM company_branches WHERE id = :id');
         $stmt->bindParam(':id', $id);
         $stmt->execute();
