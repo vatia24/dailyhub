@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 27, 2025 at 03:04 PM
+-- Generation Time: Sep 02, 2025 at 06:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,14 @@ INSERT INTO `access_tokens` (`id`, `user_id`, `token`, `created_at`, `expires_at
 (10, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NTgwMjYyMSwiZXhwIjoxNzU1ODA2MjIxLCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoiNTkxOTQxNjU1Iiwicm9sZSI6ImN1c3RvbWVyIn19.qRHCrf7R_7HnxOR4DiIP7MH0EuHHgbI6MM1v8cmcdhs', '2025-08-21 18:57:01', '2025-08-21 19:57:01'),
 (11, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NTgwMjYyOCwiZXhwIjoxNzU1ODA2MjI4LCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoiNTkxOTQxNjU1Iiwicm9sZSI6ImN1c3RvbWVyIn19.d1WLBF4bVJ8ke1ByRuq0hIYpOKFfSFCp-hf-udT9Q_8', '2025-08-21 18:57:08', '2025-08-21 21:57:08'),
 (12, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjI5NTQ5NSwiZXhwIjoxNzU2Mjk5MDk1LCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.SrZNXIc4rM7PDTQ51oNNawJKl_qQqqxO8psVquFaIkI', '2025-08-27 15:51:35', '2025-08-27 14:51:35'),
-(13, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjI5NzIyMSwiZXhwIjoxNzU2MzAwODIxLCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.7YbBcN5osFHkth6tpXMbrmD2OX5UZpd_y71B8CMSjh8', '2025-08-27 16:20:21', '2025-08-27 15:20:21');
+(13, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjI5NzIyMSwiZXhwIjoxNzU2MzAwODIxLCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.7YbBcN5osFHkth6tpXMbrmD2OX5UZpd_y71B8CMSjh8', '2025-08-27 16:20:21', '2025-08-27 15:20:21'),
+(14, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjQ2MTcxMiwiZXhwIjoxNzU2NDY1MzEyLCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.kiCUjijfjzi-RqoSCHIfbRk4zBmEcpGMW2Pz3bH8Ww0', '2025-08-29 14:01:52', '2025-08-29 13:01:52'),
+(15, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjQ2MTc2MSwiZXhwIjoxNzU2NDY1MzYxLCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.-anlOkzXm1QkFoGvnZZcRa2N5VEYkE-FZy5ak8EnPwk', '2025-08-29 14:02:41', '2025-08-29 13:02:41'),
+(16, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjQ2MjI3NSwiZXhwIjoxNzU2NDY1ODc1LCJkYXRhIjp7ImlkIjoxLCJpZGVudGlmaWVyIjoidmF0aWExOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJjdXN0b21lciJ9fQ.Oo81bzAOZg5lEXGouOSQnQr9VzBOAbee_Az8zPSMyX8', '2025-08-29 14:11:15', '2025-08-29 15:11:15'),
+(17, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjY3MDE4NSwiZXhwIjoxNzU2NjczNzg1LCJqdGkiOiI3N2U5MmYzMjA3Zjg0MDAyYTA1ODA2ZTYwYTQ3MDQ2NSIsImRhdGEiOnsiaWQiOjEsImlkZW50aWZpZXIiOiJ2YXRpYTE5OThAZ21haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIn19.1V3ghQr4sjlZ75ER7v6kQNlV_bCKTW8_49eUcEQGRog', '2025-08-31 23:56:25', '2025-09-01 00:56:25'),
+(18, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjY3MDI0OCwiZXhwIjoxNzU2NjczODQ4LCJqdGkiOiI0N2M4ODMyMDZlMWFmMmYyMzlmYTM0YmEyZmZmYTdjMyIsImRhdGEiOnsiaWQiOjEsImlkZW50aWZpZXIiOiJ2YXRpYTE5OThAZ21haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIn19.hFOcN4HExy3aEodT2Dc4c2brQcEU9KdjqPq17L5CQJM', '2025-08-31 23:57:28', '2025-09-01 00:57:28'),
+(19, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjY3MDQ4OSwiZXhwIjoxNzU2Njc0MDg5LCJqdGkiOiIyMmM2OTk2ZTNjNzhkYzM1N2I4NGU3NjVkNmZlNDFhNSIsImRhdGEiOnsiaWQiOjEsImlkZW50aWZpZXIiOiJ2YXRpYTE5OThAZ21haWwuY29tIiwicm9sZSI6ImxlZ2FsX3BlcnNvbiJ9fQ.SSpzO-ymcELFIvPtqeS2LbrOUJ5X5QaZPzyFqYXJJaA', '2025-09-01 00:01:29', '2025-09-01 01:01:29'),
+(20, 1, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkaXNjb3VudCIsImlhdCI6MTc1NjY3MDg0NCwiZXhwIjoxNzU2Njc0NDQ0LCJqdGkiOiI2ZjNmNjc2NWQwMjI1MzFhZWJiZmZlYjdjYzI1NjViZiIsImRhdGEiOnsiaWQiOjEsImlkZW50aWZpZXIiOiJ2YXRpYTE5OThAZ21haWwuY29tIiwicm9sZSI6ImxlZ2FsX3BlcnNvbiJ9fQ.V_guKq9e--VSCv4XNZ2TFh678vbPz_RnDRtb8tWxBD8', '2025-09-01 00:07:24', '2025-09-01 01:07:24');
 
 -- --------------------------------------------------------
 
@@ -74,6 +81,13 @@ CREATE TABLE `companies` (
   `logo_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `companies`
+--
+
+INSERT INTO `companies` (`id`, `user_id`, `full_name`, `address`, `city`, `postal_code`, `country`, `status`, `latitude`, `longitude`, `logo_url`) VALUES
+(1, 1, 'gio', 'gai', 'tbili', 'asd', 'string', 'verified', 41.7151000, 44.8271000, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -87,6 +101,13 @@ CREATE TABLE `company_branches` (
   `branch_address` text DEFAULT NULL,
   `branch_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `company_branches`
+--
+
+INSERT INTO `company_branches` (`id`, `company_id`, `branch_name`, `branch_address`, `branch_image`) VALUES
+(1, 1, 'Acme Central', '1 Rustaveli Ave, Tbilisi', NULL);
 
 -- --------------------------------------------------------
 
@@ -236,6 +257,14 @@ CREATE TABLE `discount` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `discount`
+--
+
+INSERT INTO `discount` (`id`, `user_id`, `company_id`, `product_id`, `discount_price`, `discount_percent`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
+(2, 1, 1, 4, NULL, 25.00, '2025-08-29', '2025-08-29', 'active', '2025-08-29 10:59:05', '2025-08-29 11:08:42'),
+(3, 1, 1, 4, 25.00, 25.00, '2025-08-29', '2025-08-29', 'active', '2025-08-29 11:03:08', '2025-08-29 11:03:08');
+
 -- --------------------------------------------------------
 
 --
@@ -275,6 +304,38 @@ CREATE TABLE `discount_actions` (
   `age_group` enum('under_18','18_24','25_34','35_44','45_54','55_64','65_plus') DEFAULT NULL,
   `gender` enum('male','female','other','unknown') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `discount_actions`
+--
+
+INSERT INTO `discount_actions` (`id`, `discount_id`, `view_date`, `action`, `created_at`, `user_id`, `device_type`, `city`, `region`, `age_group`, `gender`) VALUES
+(1, 3, '2025-08-23 11:08:53', 'view', '2025-08-23 11:08:53', 1, 'mobile', 'Tbilisi', 'Tbilisi', '25_34', 'male'),
+(2, 3, '2025-08-23 11:13:53', 'clicked', '2025-08-23 11:13:53', 1, 'mobile', 'Tbilisi', 'Tbilisi', '25_34', 'male'),
+(3, 3, '2025-08-23 11:18:53', 'redirect', '2025-08-23 11:18:53', 1, 'desktop', 'Tbilisi', 'Tbilisi', '25_34', 'male'),
+(4, 3, '2025-08-24 11:08:53', 'view', '2025-08-24 11:08:53', 2, 'desktop', 'Batumi', 'Adjara', '35_44', 'female'),
+(5, 3, '2025-08-24 11:15:53', 'map_open', '2025-08-24 11:15:53', 2, 'desktop', 'Batumi', 'Adjara', '35_44', 'female'),
+(6, 3, '2025-08-24 11:20:53', 'share', '2025-08-24 11:20:53', 2, 'tablet', 'Batumi', 'Adjara', '35_44', 'female'),
+(7, 3, '2025-08-25 11:08:53', 'view', '2025-08-25 11:08:53', 3, 'mobile', 'Kutaisi', 'Imereti', '18_24', 'male'),
+(8, 3, '2025-08-25 11:11:53', 'clicked', '2025-08-25 11:11:53', 3, 'mobile', 'Kutaisi', 'Imereti', '18_24', 'male'),
+(9, 3, '2025-08-25 11:17:53', 'favorite', '2025-08-25 11:17:53', 3, 'mobile', 'Kutaisi', 'Imereti', '18_24', 'male'),
+(10, 3, '2025-08-26 11:08:53', 'view', '2025-08-26 11:08:53', 4, 'tablet', 'Rustavi', 'Kvemo Kartli', '45_54', 'female'),
+(11, 3, '2025-08-26 11:14:53', 'clicked', '2025-08-26 11:14:53', 4, 'tablet', 'Rustavi', 'Kvemo Kartli', '45_54', 'female'),
+(12, 3, '2025-08-26 11:28:53', 'share', '2025-08-26 11:28:53', 4, 'desktop', 'Rustavi', 'Kvemo Kartli', '45_54', 'female'),
+(13, 3, '2025-08-27 11:08:53', 'view', '2025-08-27 11:08:53', 5, 'desktop', 'Zugdidi', 'Samegrelo', '55_64', 'other'),
+(14, 3, '2025-08-27 11:12:53', 'map_open', '2025-08-27 11:12:53', 5, 'desktop', 'Zugdidi', 'Samegrelo', '55_64', 'other'),
+(15, 3, '2025-08-27 11:23:53', 'redirect', '2025-08-27 11:23:53', 5, 'mobile', 'Zugdidi', 'Samegrelo', '55_64', 'other'),
+(16, 3, '2025-08-28 11:08:53', 'view', '2025-08-28 11:08:53', 6, 'mobile', 'Gori', 'Shida Kartli', '18_24', 'unknown'),
+(17, 3, '2025-08-28 11:10:53', 'clicked', '2025-08-28 11:10:53', 6, 'mobile', 'Gori', 'Shida Kartli', '18_24', 'unknown'),
+(18, 3, '2025-08-28 11:16:53', 'favorite', '2025-08-28 11:16:53', 6, 'tablet', 'Gori', 'Shida Kartli', '18_24', 'unknown'),
+(19, 3, '2025-08-29 05:08:53', 'view', '2025-08-29 05:08:53', 7, 'desktop', 'Tbilisi', 'Tbilisi', '25_34', 'male'),
+(20, 3, '2025-08-29 06:08:53', 'clicked', '2025-08-29 06:08:53', 7, 'desktop', 'Tbilisi', 'Tbilisi', '25_34', 'male'),
+(21, 2, '2025-08-25 11:08:53', 'view', '2025-08-25 11:08:53', 10, 'mobile', 'Batumi', 'Adjara', '25_34', 'female'),
+(22, 2, '2025-08-25 11:15:53', 'clicked', '2025-08-25 11:15:53', 10, 'mobile', 'Batumi', 'Adjara', '25_34', 'female'),
+(23, 2, '2025-08-26 11:08:53', 'view', '2025-08-26 11:08:53', 11, 'desktop', 'Kutaisi', 'Imereti', '35_44', 'male'),
+(24, 2, '2025-08-27 11:08:53', 'share', '2025-08-27 11:08:53', 12, 'tablet', 'Tbilisi', 'Tbilisi', '45_54', 'female'),
+(25, 2, '2025-08-28 11:08:53', 'map_open', '2025-08-28 11:08:53', 13, 'mobile', 'Rustavi', 'Kvemo Kartli', '18_24', 'other'),
+(26, 2, '2025-08-28 23:08:53', 'redirect', '2025-08-28 23:08:53', 14, 'desktop', 'Tbilisi', 'Tbilisi', '65_plus', 'unknown');
 
 -- --------------------------------------------------------
 
@@ -394,6 +455,16 @@ CREATE TABLE `product` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `product`
+--
+
+INSERT INTO `product` (`id`, `user_id`, `company_id`, `branch_id`, `name`, `description`, `price`, `image_url`, `address`, `link`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, 'Classic Burger', 'Beef patty, cheese, lettuce, tomato', 9.96, NULL, '1 Rustaveli Ave', NULL, 'inactive', '2025-08-29 10:14:14', '2025-08-31 20:17:47'),
+(2, 1, 1, 1, 'Vegan Wrap', 'Falafel, hummus, veggies', 7.50, NULL, '1 Rustaveli Ave', NULL, 'inactive', '2025-08-29 10:14:14', '2025-08-29 10:26:45'),
+(3, 1, 1, NULL, 'Margherita Pizza', 'Tomato, mozzarella, basil', 12.00, NULL, NULL, NULL, 'active', '2025-08-29 10:14:14', '2025-08-29 10:14:14'),
+(4, 1, 1, 1, 'string', 'jsahdb jkafnskfjasf', 100.00, NULL, 'miso', NULL, 'active', '2025-08-29 10:14:14', '2025-08-29 10:44:14');
+
 -- --------------------------------------------------------
 
 --
@@ -428,6 +499,41 @@ CREATE TABLE `product_images` (
   `path` varchar(512) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_images`
+--
+
+INSERT INTO `product_images` (`id`, `product_id`, `path`, `created_at`) VALUES
+(1, 1, '/uploads/products/burger1.jpg', '2025-08-29 10:14:14'),
+(2, 2, '/uploads/products/wrap1.jpg', '2025-08-29 10:14:14'),
+(4, 4, 'C:\\Users\\User\\Desktop\\sumo\\App\\Services/../../uploads/products\\upl_68b180b43f4f19.48270286.bin', '2025-08-29 10:28:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `refresh_tokens`
+--
+
+CREATE TABLE `refresh_tokens` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `expires_at` datetime NOT NULL,
+  `revoked` tinyint(1) NOT NULL DEFAULT 0,
+  `replaced_by` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `refresh_tokens`
+--
+
+INSERT INTO `refresh_tokens` (`id`, `user_id`, `token`, `created_at`, `expires_at`, `revoked`, `replaced_by`) VALUES
+(1, 1, '6794e373c834a3a7a96b86770aeaee91ee917578aec0e0a73d8745de029fc700', '2025-08-31 23:56:25', '2025-09-14 23:56:25', 0, NULL),
+(2, 1, 'a688a2ceb3b546b5c2b8b41350bc8e4726a250040be051c2bb5343db8b85782f', '2025-08-31 23:57:28', '2025-09-14 23:57:28', 0, NULL),
+(3, 1, 'ce0a0d5b6f5902ebc86b297415540af0ff18ed079bd9e65b9a3547c8ae4f5140', '2025-09-01 00:01:29', '2025-09-15 00:01:29', 0, NULL),
+(4, 1, '06ab497243694faee21a14e45a90414dd283519aaac525bb5248957296a71704', '2025-09-01 00:07:24', '2025-09-15 00:07:24', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -473,7 +579,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `name`, `email`, `mobile`, `user_type`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'whatia', '$argon2id$v=19$m=65536,t=4,p=2$UEZSMEliMkFOcGlPYzNXZA$u2qjTba9gUKztzIrwlZM8LQa9JSb5S8ZviyiqTFL9WE', 'Giorgi', 'vatia1998@gmail.com', '591941655', 'customer', '2025-08-21 12:35:36', '2025-08-27 11:46:00', 'active'),
+(1, 'whatia', '$argon2id$v=19$m=65536,t=4,p=2$UEZSMEliMkFOcGlPYzNXZA$u2qjTba9gUKztzIrwlZM8LQa9JSb5S8ZviyiqTFL9WE', 'Giorgi', 'vatia1998@gmail.com', '591941655', 'legal_person', '2025-08-21 12:35:36', '2025-08-31 20:01:10', 'active'),
 (2, 'john', '$argon2id$v=19$m=65536,t=4,p=2$SUF3QmpoOC9pUWRTbGNISA$rKaK2fnmmweMsOPRil7jdW30NBoKsjGS0nCj9PLiMKs', 'John', 'john@example.com', '555123456', 'customer', '2025-08-26 15:15:21', '2025-08-26 15:15:21', 'unverified');
 
 -- --------------------------------------------------------
@@ -487,6 +593,14 @@ CREATE TABLE `user_limits` (
   `limit_check` int(11) NOT NULL DEFAULT 0,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_limits`
+--
+
+INSERT INTO `user_limits` (`username`, `limit_check`, `updated_at`) VALUES
+('giorgi@example.com', 2, '2025-08-31 19:59:03'),
+('vatia1998@gmail.com', 0, '2025-08-31 20:07:24');
 
 -- --------------------------------------------------------
 
@@ -560,7 +674,8 @@ ALTER TABLE `companies`
 --
 ALTER TABLE `company_branches`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `company_branches_ibfk_1` (`company_id`);
+  ADD KEY `company_branches_ibfk_1` (`company_id`),
+  ADD KEY `idx_cb_company_id_id` (`company_id`,`id`);
 
 --
 -- Indexes for table `company_documents`
@@ -568,14 +683,16 @@ ALTER TABLE `company_branches`
 ALTER TABLE `company_documents`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_cd_company` (`company_id`),
-  ADD KEY `idx_cd_status` (`status`);
+  ADD KEY `idx_cd_status` (`status`),
+  ADD KEY `idx_cd_company_id_id` (`company_id`,`id`);
 
 --
 -- Indexes for table `company_gallery`
 --
 ALTER TABLE `company_gallery`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_cg_company` (`company_id`);
+  ADD KEY `idx_cg_company` (`company_id`),
+  ADD KEY `idx_cg_company_id_id` (`company_id`,`id`);
 
 --
 -- Indexes for table `company_hours`
@@ -597,7 +714,8 @@ ALTER TABLE `company_socials`
 ALTER TABLE `contact`
   ADD PRIMARY KEY (`id`),
   ADD KEY `contact_ibfk_1` (`user_id`),
-  ADD KEY `contact_ibfk_2` (`company_id`);
+  ADD KEY `contact_ibfk_2` (`company_id`),
+  ADD KEY `idx_contact_company_id_id` (`company_id`,`id`);
 
 --
 -- Indexes for table `delivery_zones`
@@ -617,7 +735,9 @@ ALTER TABLE `discount`
   ADD KEY `idx_discount_company_id` (`company_id`),
   ADD KEY `idx_discount_product_id` (`product_id`),
   ADD KEY `idx_discount_status` (`status`),
-  ADD KEY `idx_discount_window` (`start_date`,`end_date`);
+  ADD KEY `idx_discount_window` (`start_date`,`end_date`),
+  ADD KEY `idx_discount_product_status_updated` (`product_id`,`status`,`updated_at`),
+  ADD KEY `idx_discount_company_status_updated` (`company_id`,`status`,`updated_at`);
 
 --
 -- Indexes for table `discount_actions`
@@ -626,7 +746,8 @@ ALTER TABLE `discount_actions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `discount_actions_ibfk_1` (`discount_id`),
   ADD KEY `idx_actions_discount_created` (`discount_id`,`created_at`),
-  ADD KEY `idx_actions_discount_action` (`discount_id`,`action`);
+  ADD KEY `idx_actions_discount_action` (`discount_id`,`action`),
+  ADD KEY `idx_actions_action_discount` (`action`,`discount_id`);
 
 --
 -- Indexes for table `individual_entrepreneurs`
@@ -661,7 +782,8 @@ ALTER TABLE `otp_codes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_mobile_created_at` (`mobile`,`created_at`),
   ADD KEY `idx_otp_mobile_created` (`mobile`,`created_at`),
-  ADD KEY `idx_otp_is_used` (`is_used`);
+  ADD KEY `idx_otp_is_used` (`is_used`),
+  ADD KEY `idx_otp_mobile_used_created` (`mobile`,`is_used`,`created_at`);
 
 --
 -- Indexes for table `product`
@@ -674,14 +796,27 @@ ALTER TABLE `product`
   ADD KEY `idx_product_company_id` (`company_id`),
   ADD KEY `idx_product_branch_id` (`branch_id`),
   ADD KEY `idx_product_status` (`status`),
-  ADD KEY `idx_product_name` (`name`);
+  ADD KEY `idx_product_name` (`name`),
+  ADD KEY `idx_product_company_status_created` (`company_id`,`status`,`created_at`,`id`),
+  ADD KEY `idx_product_branch_status_created` (`branch_id`,`status`,`created_at`,`id`);
+ALTER TABLE `product` ADD FULLTEXT KEY `ft_product_name_desc` (`name`,`description`);
 
 --
 -- Indexes for table `product_images`
 --
 ALTER TABLE `product_images`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_pi_product` (`product_id`);
+  ADD KEY `idx_pi_product` (`product_id`),
+  ADD KEY `idx_pi_product_id_id` (`product_id`,`id`);
+
+--
+-- Indexes for table `refresh_tokens`
+--
+ALTER TABLE `refresh_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `token` (`token`),
+  ADD KEY `idx_rt_user` (`user_id`),
+  ADD KEY `idx_rt_expires` (`expires_at`);
 
 --
 -- Indexes for table `sub_user`
@@ -689,7 +824,8 @@ ALTER TABLE `product_images`
 ALTER TABLE `sub_user`
   ADD PRIMARY KEY (`id`),
   ADD KEY `sub_user_ibfk_1` (`company_id`),
-  ADD KEY `sub_user_ibfk_2` (`user_id`);
+  ADD KEY `sub_user_ibfk_2` (`user_id`),
+  ADD KEY `idx_sub_user_user_company_active` (`user_id`,`company_id`,`active`);
 
 --
 -- Indexes for table `users`
@@ -714,19 +850,19 @@ ALTER TABLE `user_limits`
 -- AUTO_INCREMENT for table `access_tokens`
 --
 ALTER TABLE `access_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `company_branches`
 --
 ALTER TABLE `company_branches`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `company_documents`
@@ -768,13 +904,13 @@ ALTER TABLE `delivery_zones`
 -- AUTO_INCREMENT for table `discount`
 --
 ALTER TABLE `discount`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `discount_actions`
 --
 ALTER TABLE `discount_actions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `individual_entrepreneurs`
@@ -804,13 +940,19 @@ ALTER TABLE `otp_codes`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `refresh_tokens`
+--
+ALTER TABLE `refresh_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `sub_user`
@@ -931,6 +1073,12 @@ ALTER TABLE `product`
 --
 ALTER TABLE `product_images`
   ADD CONSTRAINT `fk_pi_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `refresh_tokens`
+--
+ALTER TABLE `refresh_tokens`
+  ADD CONSTRAINT `fk_rt_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `sub_user`
