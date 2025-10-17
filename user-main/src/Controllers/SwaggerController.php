@@ -16,7 +16,12 @@ final class SwaggerController
     {
         header('Content-Type: text/html; charset=utf-8');
         // Uses Swagger UI CDN and points to a swagger.yaml under the configured BASE_PATH if provided
-        $basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
+        // Read BASE_PATH robustly from multiple sources
+        $rawBase = getenv('BASE_PATH');
+        if ($rawBase === false || $rawBase === '') {
+            $rawBase = $_ENV['BASE_PATH'] ?? ($_SERVER['BASE_PATH'] ?? '');
+        }
+        $basePath = rtrim((string)$rawBase, '/');
         echo '<!doctype html><html><head><meta charset="utf-8"/><title>API Docs</title>' .
             '<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css"/>' .
             '</head><body>' .
