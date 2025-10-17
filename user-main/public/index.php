@@ -23,7 +23,31 @@ use App\Utils\RateLimiter;
 // Support running behind a path prefix (e.g., /api-user). When BASE_PATH is set,
 // we strip it from REQUEST_URI so the router can continue matching absolute paths
 // like /api/discounts.
-$basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
+// Be robust in how we read BASE_PATH in different environments.
+$__basePathRaw = getenv('BASE_PATH');
+if ($__basePathRaw === false || $__basePathRaw === '') {
+    $__basePathRaw = $_ENV['BASE_PATH'] ?? ($_SERVER['BASE_PATH'] ?? '');
+}
+$basePath = rtrim((string)$__basePathRaw, '/');
+
+// If BASE_PATH isn't provided, try to infer it from the current request URI.
+// This helps when deployed behind an ingress path prefix without env configured.
+if ($basePath === '' && isset($_SERVER['REQUEST_URI'])) {
+    $uriPath = (string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    // If the request includes /api/ segment, everything before it is the base prefix.
+    $apiPos = strpos($uriPath, '/api/');
+    if ($apiPos !== false && $apiPos > 0) {
+        $basePath = rtrim(substr($uriPath, 0, $apiPos), '/');
+    } elseif ($uriPath !== '') {
+        // If hitting swagger endpoints, infer from their directory.
+        if (str_ends_with($uriPath, '/swagger') || str_ends_with($uriPath, '/swagger/')) {
+            $basePath = rtrim(dirname($uriPath), '/');
+        } elseif (str_ends_with($uriPath, '/swagger.yaml')) {
+            $basePath = rtrim(dirname($uriPath), '/');
+        }
+    }
+}
+
 if ($basePath !== '' && isset($_SERVER['REQUEST_URI'])) {
     $uri = $_SERVER['REQUEST_URI'];
     if (str_starts_with($uri, $basePath . '/')) {
