@@ -55,7 +55,7 @@ class CategoryModel
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            throw new Exception('Error listing categories: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error listing categories: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -68,7 +68,7 @@ class CategoryModel
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ?: null;
         } catch (Throwable $e) {
-            throw new Exception('Error fetching category: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error fetching category: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -81,7 +81,7 @@ class CategoryModel
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ?: null;
         } catch (Throwable $e) {
-            throw new Exception('Error fetching category by slug: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error fetching category by slug: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -147,7 +147,7 @@ class CategoryModel
                 return (int)$this->db->lastInsertId();
             }
         } catch (Throwable $e) {
-            throw new Exception('Error upserting category: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error upserting category: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -167,7 +167,7 @@ class CategoryModel
             $stmt3->bindValue(':id', $id, PDO::PARAM_INT);
             return $stmt3->execute();
         } catch (Throwable $e) {
-            throw new Exception('Error deleting category: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error deleting category: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -183,7 +183,7 @@ class CategoryModel
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (Throwable $e) {
-            throw new Exception('Error updating category image: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error updating category image: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -206,7 +206,7 @@ class CategoryModel
             $this->db->commit();
         } catch (Throwable $e) {
             $this->db->rollBack();
-            throw new Exception('Error setting product categories: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error setting product categories: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -218,7 +218,7 @@ class CategoryModel
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            throw new Exception('Error listing product categories: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error listing product categories: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 

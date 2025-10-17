@@ -74,7 +74,7 @@ class ProductModel
 
             return $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            throw new Exception('Error fetching all products: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error fetching all products: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -140,7 +140,7 @@ class ProductModel
             $product = $statement->fetch(PDO::FETCH_ASSOC);
             return $product ?: null; // Return null if no product is found
         } catch (Throwable $e) {
-            throw new Exception('Error fetching product by ID: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error fetching product by ID: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -164,7 +164,7 @@ class ProductModel
 
             return (int)$this->db->lastInsertId();
         } catch (Throwable $e) {
-            throw new Exception('Error adding product: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error adding product: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -191,7 +191,7 @@ class ProductModel
 
             return $statement->execute();
         } catch (Throwable $e) {
-            throw new Exception('Error updating product: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error updating product: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -221,7 +221,7 @@ class ProductModel
 
             return $statement->execute();
         } catch (Throwable $e) {
-            throw new Exception('Error deleting product: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error deleting product: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -282,7 +282,7 @@ class ProductModel
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            throw new Exception('Error listing products: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error listing products: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -442,7 +442,7 @@ class ProductModel
             }
             return (int)$this->db->lastInsertId();
         } catch (Throwable $e) {
-            throw new Exception('Error upserting product: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error upserting product: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -462,7 +462,7 @@ class ProductModel
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ?: null;
         } catch (Throwable $e) {
-            throw new Exception('Error fetching product: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error fetching product: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -488,7 +488,7 @@ class ProductModel
             $stmt->execute();
             return $stmt->rowCount();
         } catch (Throwable $e) {
-            throw new Exception('Error updating product statuses: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error updating product statuses: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -504,7 +504,7 @@ class ProductModel
             $stmt->execute();
             return (int)$this->db->lastInsertId();
         } catch (Throwable $e) {
-            throw new Exception('Error adding product image: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error adding product image: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -516,7 +516,7 @@ class ProductModel
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
-            throw new Exception('Error listing product images: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error listing product images: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 
@@ -538,7 +538,7 @@ class ProductModel
             $stmt->bindValue(':id', $imageId, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (Throwable $e) {
-            throw new Exception('Error deleting product image: ' . $e->getMessage(), $e->getCode());
+            throw new Exception('Error deleting product image: ' . $e->getMessage(), (int)($e->getCode() ?: 0), $e);
         }
     }
 }
