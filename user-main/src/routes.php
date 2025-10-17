@@ -22,6 +22,7 @@ use App\Utils\Middlewares\RateLimitMiddleware;
 return function (Router $router): void {
     // Health
     $router->get('/api/health', [HealthController::class, 'health']);
+    $router->get('/api/health/db', [HealthController::class, 'db']);
     // Auth
     $router->post('/api/auth/register', [AuthController::class, 'register'], [RateLimitMiddleware::class]);
     $router->post('/api/auth/login', [AuthController::class, 'login'], [RateLimitMiddleware::class]);
