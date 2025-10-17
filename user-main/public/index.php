@@ -20,6 +20,19 @@ use App\Utils\Request;
 use App\Utils\Response;
 use App\Utils\RateLimiter;
 
+// Support running behind a path prefix (e.g., /api-user). When BASE_PATH is set,
+// we strip it from REQUEST_URI so the router can continue matching absolute paths
+// like /api/discounts.
+$basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
+if ($basePath !== '' && isset($_SERVER['REQUEST_URI'])) {
+    $uri = $_SERVER['REQUEST_URI'];
+    if (str_starts_with($uri, $basePath . '/')) {
+        $_SERVER['REQUEST_URI'] = substr($uri, strlen($basePath));
+    } elseif ($uri === $basePath) {
+        $_SERVER['REQUEST_URI'] = '/';
+    }
+}
+
 header('Content-Type: application/json');
 // Basic CORS and security headers (mirrors dailyhub-main defaults)
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

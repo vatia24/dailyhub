@@ -88,6 +88,14 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 
+// Support running behind a path prefix (e.g., /api-owner). When BASE_PATH is set,
+// strip it from the incoming URI before dispatching to FastRoute.
+$basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
+if ($basePath !== '' && str_starts_with($uri, $basePath)) {
+    $uri = substr($uri, strlen($basePath));
+    if ($uri === '') { $uri = '/'; }
+}
+
 // Remove the query string and decode the URI
 if (false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
