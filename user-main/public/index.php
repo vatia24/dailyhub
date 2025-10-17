@@ -15,6 +15,33 @@ if (is_file($__envBase . DIRECTORY_SEPARATOR . '.env')) {
     $dotenv->safeLoad();
 }
 
+// Ensure unhandled errors are returned as JSON (helps clients avoid "can't parse JSON")
+set_exception_handler(function ($e) {
+    $isDev = (($_ENV['APP_ENV'] ?? 'production') === 'development');
+    http_response_code(500);
+    header('Content-Type: application/json');
+    $payload = ['error' => 'Internal Server Error'];
+    if ($isDev) {
+        $payload['exception'] = is_object($e) ? get_class($e) : 'Error';
+        $payload['message'] = is_object($e) && method_exists($e, 'getMessage') ? $e->getMessage() : (string)$e;
+    }
+    echo json_encode($payload, JSON_UNESCAPED_SLASHES);
+});
+
+set_error_handler(function ($severity, $message, $file, $line) {
+    // Convert errors to exceptions so they get handled above
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
+register_shutdown_function(function () {
+    $err = error_get_last();
+    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        http_response_code(500);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Fatal Error'], JSON_UNESCAPED_SLASHES);
+    }
+});
+
 use App\Utils\Router;
 use App\Utils\Request;
 use App\Utils\Response;

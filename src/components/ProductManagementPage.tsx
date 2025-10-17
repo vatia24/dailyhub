@@ -16,8 +16,8 @@ import { Edit } from 'lucide-react';
 
 // Helper function to get the base URL for serving static files
 const getBaseUrl = () => {
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-  return apiUrl.replace('/api', '');
+  const apiUrl = process.env.REACT_APP_API_URL || 'https://sumo.ge/api-owner';
+  return apiUrl.replace(/\/(api|api-owner)$/i, '');
 };
 
 // Normalize a product image path to a browser-accessible URL (prefer images table)

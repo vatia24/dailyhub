@@ -1,6 +1,6 @@
 // API Configuration
 // Point to owner/admin API by default; can be overridden via env
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sumo.ge/api-owner';
 // Secondary backend constant removed; user is fetched from same backend now
 
 // Types

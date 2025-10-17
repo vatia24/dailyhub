@@ -50,8 +50,8 @@ const OffersTable: React.FC<OffersTableProps> = ({
 
   // Helper to resolve product thumbnail URL
   const getBaseUrl = () => {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-    return apiUrl.replace('/api', '');
+    const apiUrl = process.env.REACT_APP_API_URL || 'https://sumo.ge/api-owner';
+    return apiUrl.replace(/\/(api|api-owner)$/i, '');
   };
 
   const getProductListThumbUrl = (path?: string) => {
