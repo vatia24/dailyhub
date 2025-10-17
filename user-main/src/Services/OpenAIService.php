@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repositories\ConfigRepository;
+use App\Config\Database;
 
 final class OpenAIService
 {
@@ -13,8 +13,11 @@ final class OpenAIService
 
     public function __construct()
     {
-        $repo = new ConfigRepository();
-        $this->apiKey = (string)($repo->get('OPENAI_API_KEY') ?? ($_ENV['OPENAI_API_KEY'] ?? ''));
+        $db = Database::connection();
+        $stmt = $db->prepare('SELECT `value` FROM app_config WHERE `key` = ? LIMIT 1');
+        $stmt->execute(['OPENAI_API_KEY']);
+        $row = $stmt->fetch();
+        $this->apiKey = (string)($row['value'] ?? '');
         $this->baseUrl = rtrim((string)($_ENV['OPENAI_BASE_URL'] ?? 'https://api.openai.com/v1'), '/');
         $this->model = (string)($_ENV['OPENAI_MODEL'] ?? 'gpt-5.0');
     }
