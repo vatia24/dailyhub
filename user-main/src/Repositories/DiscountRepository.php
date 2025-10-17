@@ -20,7 +20,7 @@ final class DiscountRepository
     {
         $params = [];
         // dailyhub-main uses table `discount` with status and dates
-        $where = ['(d.status = "active")', '(d.start_date IS NULL OR d.start_date <= CURDATE())', '(d.end_date IS NULL OR d.end_date >= CURDATE())'];
+        $where = ['(d.status = \'active\')', '(d.start_date IS NULL OR d.start_date <= CURDATE())', '(d.end_date IS NULL OR d.end_date >= CURDATE())'];
         if (!empty($filters['minDiscount'])) { $where[] = 'd.discount_percent >= ?'; $params[] = (int)$filters['minDiscount']; }
         if (!empty($filters['maxDiscount'])) { $where[] = 'd.discount_percent <= ?'; $params[] = (int)$filters['maxDiscount']; }
         if (!empty($filters['expiresSoon'])) { $where[] = '(d.end_date IS NOT NULL AND d.end_date <= DATE_ADD(CURDATE(), INTERVAL 3 DAY))'; }
@@ -77,7 +77,7 @@ final class DiscountRepository
         $qLike = '%' . $q . '%';
         $sql = 'SELECT d.*, p.name as product_name, p.price as product_price
                 FROM discount d LEFT JOIN product p ON p.id = d.product_id
-                WHERE (p.name LIKE ?) AND (d.status = "active") AND (d.start_date IS NULL OR d.start_date <= CURDATE()) AND (d.end_date IS NULL OR d.end_date >= CURDATE())
+                WHERE (p.name LIKE ?) AND (d.status = \'active\') AND (d.start_date IS NULL OR d.start_date <= CURDATE()) AND (d.end_date IS NULL OR d.end_date >= CURDATE())
                 ORDER BY d.id DESC LIMIT ' . $limit;
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$qLike]);
