@@ -199,6 +199,7 @@ $parents = array_filter($rows, fn($r) => $r['parent_id'] === null);
                                     if (!preg_match('#^https?://#i', $src)) {
                                         $src = '/' . ltrim($src, '/');
                                     }
+                                    $src = 'https://sumo.ge/api-user' . $src;
                                 ?>
                                 <img src="<?php echo htmlspecialchars($src, ENT_QUOTES); ?>" alt="" style="height:40px">
                             <?php else: ?>
