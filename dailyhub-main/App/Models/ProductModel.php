@@ -27,7 +27,7 @@ class ProductModel
     {
         try {
             $statement = $this->db->prepare(
-                'SELECT 
+                "SELECT 
                     p.*,
                     d.id AS discount_id,
                     d.discount_price,
@@ -68,7 +68,7 @@ class ProductModel
                         FROM product_images
                         GROUP BY product_id
                     ) pim ON pim.product_id = pi.product_id AND pim.max_id = pi.id
-                 ) img ON img.product_id = p.id'
+                 ) img ON img.product_id = p.id"
             );
             $statement->execute();
 
@@ -90,7 +90,7 @@ class ProductModel
     {
         try {
             $statement = $this->db->prepare(
-                'SELECT 
+                "SELECT 
                     p.*,
                     d.id AS discount_id,
                     d.discount_price,
@@ -132,7 +132,7 @@ class ProductModel
                         GROUP BY product_id
                     ) pim ON pim.product_id = pi.product_id AND pim.max_id = pi.id
                  ) img ON img.product_id = p.id
-                 WHERE p.id = :productId'
+                 WHERE p.id = :productId"
             );
             $statement->bindParam(':productId', $productId, PDO::PARAM_INT);
             $statement->execute();
