@@ -12,8 +12,8 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @OA\Server(
- *     url="/",
- *     description="Current origin"
+ *     url="https://sumo.ge/api-owner",
+ *     description="Production"
  * )
  */
 class OpenApi
