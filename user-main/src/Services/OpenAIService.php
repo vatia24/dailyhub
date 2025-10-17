@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repositories\ConfigRepository;
+
 final class OpenAIService
 {
     private string $apiKey;
@@ -11,7 +13,8 @@ final class OpenAIService
 
     public function __construct()
     {
-        $this->apiKey = (string)($_ENV['OPENAI_API_KEY'] ?? '');
+        $repo = new ConfigRepository();
+        $this->apiKey = (string)($repo->get('OPENAI_API_KEY') ?? ($_ENV['OPENAI_API_KEY'] ?? ''));
         $this->baseUrl = rtrim((string)($_ENV['OPENAI_BASE_URL'] ?? 'https://api.openai.com/v1'), '/');
         $this->model = (string)($_ENV['OPENAI_MODEL'] ?? 'gpt-5.0');
     }
