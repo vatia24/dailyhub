@@ -15,13 +15,21 @@ final class SwaggerController
     public function ui(): void
     {
         header('Content-Type: text/html; charset=utf-8');
-        // Uses Swagger UI CDN and points to a relative swagger.yaml (works with path prefixes like /api-user)
+        // Uses Swagger UI CDN and points to a swagger.yaml under the configured BASE_PATH if provided
+        $basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
         echo '<!doctype html><html><head><meta charset="utf-8"/><title>API Docs</title>' .
             '<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css"/>' .
             '</head><body>' .
             '<div id="swagger-ui"></div>' .
             '<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>' .
-            '<script>window.ui = SwaggerUIBundle({ url: "./swagger.yaml", dom_id: "#swagger-ui" });</script>' .
+            '<script>' .
+            '  (function(){' .
+            '    var cfgBase = ' . json_encode($basePath) . ';' .
+            '    var base = cfgBase && cfgBase.length ? cfgBase : window.location.pathname.replace(/\/$/, "");' .
+            '    var specUrl = base + "/swagger.yaml";' .
+            '    window.ui = SwaggerUIBundle({ url: specUrl, dom_id: "#swagger-ui" });' .
+            '  })();' .
+            '</script>' .
             '</body></html>';
     }
 

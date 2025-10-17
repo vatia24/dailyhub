@@ -29,7 +29,10 @@ if ($basePath !== '' && isset($_SERVER['REQUEST_URI'])) {
     if (str_starts_with($uri, $basePath . '/')) {
         $_SERVER['REQUEST_URI'] = substr($uri, strlen($basePath));
     } elseif ($uri === $basePath) {
-        $_SERVER['REQUEST_URI'] = '/';
+        // Redirect bare prefix to slash-suffixed path so relative assets resolve
+        $loc = $basePath . '/';
+        header('Location: ' . $loc, true, 301);
+        exit;
     }
 }
 
