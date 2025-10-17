@@ -1,6 +1,7 @@
 // API Configuration
 // Point to owner/admin API by default; can be overridden via env
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sumo.ge/api-owner';
+// Use production base including '/api' to hit correct routes without redirect
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sumo.ge/api-owner/api';
 // Secondary backend constant removed; user is fetched from same backend now
 
 // Types
@@ -258,7 +259,8 @@ class ApiService {
     data?: any
   ): Promise<ApiResponse<T>> {
     try {
-      let url = `${API_BASE_URL}/${endpoint}`;
+      const baseUrl = API_BASE_URL.replace(/\/+$/, '');
+      let url = `${baseUrl}/${endpoint}`;
       const options: RequestInit = {
         method,
         headers: this.getHeaders(),
