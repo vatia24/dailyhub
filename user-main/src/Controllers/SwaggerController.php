@@ -32,7 +32,22 @@ final class SwaggerController
             '    var cfgBase = ' . json_encode($basePath) . ';' .
             '    var base = cfgBase && cfgBase.length ? cfgBase : window.location.pathname.replace(/\/$/, "");' .
             '    var specUrl = base + "/swagger.yaml";' .
-            '    window.ui = SwaggerUIBundle({ url: specUrl, dom_id: "#swagger-ui" });' .
+            '    window.ui = SwaggerUIBundle({' .
+            '      url: specUrl,' .
+            '      dom_id: "#swagger-ui",' .
+            '      requestInterceptor: function(req) {' .
+            '        try {' .
+            '          var u = new URL(req.url, window.location.origin);' .
+            '          if (u.pathname.indexOf("/api/") === 0) {' .
+            '            if (base && u.pathname.indexOf(base + "/api/") !== 0) {' .
+            '              u.pathname = base + u.pathname;' .
+            '              req.url = u.toString();' .
+            '            }' .
+            '          }' .
+            '        } catch (e) {}' .
+            '        return req;' .
+            '      }' .
+            '    });' .
             '  })();' .
             '</script>' .
             '</body></html>';
