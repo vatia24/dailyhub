@@ -15,13 +15,13 @@ final class SwaggerController
     public function ui(): void
     {
         header('Content-Type: text/html; charset=utf-8');
-        // Uses Swagger UI CDN and points to /swagger.yaml
+        // Uses Swagger UI CDN and points to a relative swagger.yaml (works with path prefixes like /api-user)
         echo '<!doctype html><html><head><meta charset="utf-8"/><title>API Docs</title>' .
             '<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css"/>' .
             '</head><body>' .
             '<div id="swagger-ui"></div>' .
             '<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>' .
-            '<script>window.ui = SwaggerUIBundle({ url: "/swagger.yaml", dom_id: "#swagger-ui" });</script>' .
+            '<script>window.ui = SwaggerUIBundle({ url: "./swagger.yaml", dom_id: "#swagger-ui" });</script>' .
             '</body></html>';
     }
 
