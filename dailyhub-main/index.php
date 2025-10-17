@@ -90,7 +90,20 @@ $uri = $_SERVER['REQUEST_URI'];
 
 // Support running behind a path prefix (e.g., /api-owner). When BASE_PATH is set,
 // strip it from the incoming URI before dispatching to FastRoute.
-$basePath = rtrim((string)($_ENV['BASE_PATH'] ?? ''), '/');
+$__basePathRaw = getenv('BASE_PATH');
+if ($__basePathRaw === false || $__basePathRaw === '') {
+    $__basePathRaw = $_ENV['BASE_PATH'] ?? ($_SERVER['BASE_PATH'] ?? '');
+}
+$basePath = rtrim((string)$__basePathRaw, '/');
+
+// If BASE_PATH is not set, try to infer from the request URI before '/api/'.
+if ($basePath === '' && is_string($uri)) {
+    $apiPos = strpos($uri, '/api/');
+    if ($apiPos !== false && $apiPos > 0) {
+        $basePath = rtrim(substr($uri, 0, $apiPos), '/');
+    }
+}
+
 if ($basePath !== '' && str_starts_with($uri, $basePath)) {
     $uri = substr($uri, strlen($basePath));
     if ($uri === '') { $uri = '/'; }
