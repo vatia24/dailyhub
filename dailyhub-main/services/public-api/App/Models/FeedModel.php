@@ -28,7 +28,7 @@ class FeedModel
                INNER JOIN (SELECT product_id, MAX(id) AS max_id FROM product_images GROUP BY product_id) last
                ON pi.product_id = last.product_id AND pi.id = last.max_id
              ) img ON img.product_id = p.id
-             LEFT JOIN discount d ON d.product_id = p.id AND d.status IN ("active","scheduled")
+             LEFT JOIN discount d ON d.product_id = p.id AND d.status IN ('active','scheduled')
                AND (d.start_date IS NULL OR d.start_date <= CURDATE())
                AND (d.end_date IS NULL OR d.end_date >= CURDATE())
              ORDER BY p.updated_at DESC LIMIT :limit OFFSET :offset'
@@ -51,7 +51,7 @@ class FeedModel
                INNER JOIN (SELECT product_id, MAX(id) AS max_id FROM product_images GROUP BY product_id) last
                ON pi.product_id = last.product_id AND pi.id = last.max_id
              ) img ON img.product_id = p.id
-             LEFT JOIN discount d ON d.product_id = p.id AND d.status IN ("active","scheduled")
+             LEFT JOIN discount d ON d.product_id = p.id AND d.status IN ('active','scheduled')
                AND (d.start_date IS NULL OR d.start_date <= CURDATE())
                AND (d.end_date IS NULL OR d.end_date >= CURDATE())
              WHERE p.id = :id'

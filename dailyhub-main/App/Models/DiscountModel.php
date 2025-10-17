@@ -284,7 +284,7 @@ class DiscountModel
      */
     public function getActiveByProduct(int $productId, ?int $companyId = null): ?array
     {
-        $sql = 'SELECT * FROM discount WHERE product_id = :pid AND status = "active" AND (start_date IS NULL OR start_date <= CURDATE()) AND (end_date IS NULL OR end_date >= CURDATE())';
+        $sql = "SELECT * FROM discount WHERE product_id = :pid AND status = 'active' AND (start_date IS NULL OR start_date <= CURDATE()) AND (end_date IS NULL OR end_date >= CURDATE())";
         if ($companyId !== null) {
             $sql .= ' AND company_id = :cid';
         }

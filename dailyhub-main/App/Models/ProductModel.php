@@ -49,14 +49,14 @@ class ProductModel
                  FROM product p
                  LEFT JOIN discount d 
                    ON d.product_id = p.id
-                  AND d.status IN ("active", "scheduled")
+                  AND d.status IN ('active', 'scheduled')
                   AND (d.start_date IS NULL OR d.start_date <= CURDATE())
                   AND (d.end_date IS NULL OR d.end_date >= CURDATE())
                   AND d.updated_at = (
                         SELECT MAX(d2.updated_at) 
                         FROM discount d2 
                         WHERE d2.product_id = p.id 
-                          AND d2.status IN ("active", "scheduled")
+                          AND d2.status IN ('active', 'scheduled')
                           AND (d2.start_date IS NULL OR d2.start_date <= CURDATE())
                           AND (d2.end_date IS NULL OR d2.end_date >= CURDATE())
                   )
@@ -112,14 +112,14 @@ class ProductModel
                  FROM product p
                  LEFT JOIN discount d 
                    ON d.product_id = p.id
-                  AND d.status IN ("active", "scheduled")
+                  AND d.status IN ('active', 'scheduled')
                   AND (d.start_date IS NULL OR d.start_date <= CURDATE())
                   AND (d.end_date IS NULL OR d.end_date >= CURDATE())
                   AND d.updated_at = (
                         SELECT MAX(d2.updated_at) 
                         FROM discount d2 
                         WHERE d2.product_id = p.id 
-                          AND d2.status IN ("active", "scheduled")
+                          AND d2.status IN ('active', 'scheduled')
                           AND (d2.start_date IS NULL OR d2.start_date <= CURDATE())
                           AND (d2.end_date IS NULL OR d2.end_date >= CURDATE())
                   )
