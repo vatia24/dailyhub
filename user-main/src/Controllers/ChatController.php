@@ -24,6 +24,7 @@ final class ChatController
         $userMessage = isset($body['message']) ? (string)$body['message'] : '';
         $history = isset($body['history']) && is_array($body['history']) ? $body['history'] : [];
         $sessionKey = isset($body['sessionKey']) ? (string)$body['sessionKey'] : '';
+        $authUserId = (int)($this->req->params['authUserId'] ?? 0) ?: null;
 
         if ($userMessage === '' && !$history) {
             $this->res->json(['error' => 'message or history is required'], 422);
@@ -111,17 +112,28 @@ final class ChatController
             $reply = (string)$response['choices'][0]['message']['content'];
         }
 
-        // Persist session and messages if sessionKey provided (or create one)
+        // Persist session and messages; validate sessionKey format and ownership
         $repo = new ChatRepository();
-        $authUserId = (int)($this->req->params['authUserId'] ?? 0) ?: null;
+        // Validate UUID v4 format when provided
+        if ($sessionKey !== '') {
+            if (!preg_match('/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/', $sessionKey)) {
+                $this->res->json(['error' => 'Invalid sessionKey format'], 422);
+                return;
+            }
+        }
         if ($sessionKey === '') {
             $sessionKey = self::generateUuid();
         }
         $session = $repo->findSessionByKey($sessionKey);
-        if (!$session) {
-            $sessionId = $repo->createSession($authUserId, $sessionKey, null);
-        } else {
+        if ($session) {
+            // Enforce ownership: session must belong to the same user when user-bound
+            if ($session['user_id'] !== null && $authUserId !== null && (int)$session['user_id'] !== (int)$authUserId) {
+                $this->res->json(['error' => 'Forbidden: session does not belong to user'], 403);
+                return;
+            }
             $sessionId = (int)$session['id'];
+        } else {
+            $sessionId = $repo->createSession($authUserId, $sessionKey, null);
         }
         if ($userMessage !== '') { $repo->appendMessage($sessionId, 'user', $userMessage); }
         if ($reply !== '') { $repo->appendMessage($sessionId, 'assistant', $reply); }

@@ -69,8 +69,8 @@ return function (Router $router): void {
     $router->get('/api/challenges/active', [ChallengesController::class, 'active']);
     $router->post('/api/challenges/:id/complete', [ChallengesController::class, 'complete'], [AuthMiddleware::class]);
 
-    // AI Chat
-    $router->post('/api/chat', [ChatController::class, 'chat'], [RateLimitMiddleware::class]);
+    // AI Chat (secured)
+    $router->post('/api/chat', [ChatController::class, 'chat'], [RateLimitMiddleware::class, AuthMiddleware::class]);
     $router->post('/api/chat/sessions', [ChatController::class, 'createSession'], [AuthMiddleware::class]);
     $router->get('/api/chat/sessions', [ChatController::class, 'listSessions'], [AuthMiddleware::class]);
     $router->get('/api/chat/sessions/:sessionKey/messages', [ChatController::class, 'getMessages'], [AuthMiddleware::class]);

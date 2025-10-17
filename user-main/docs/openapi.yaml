@@ -449,6 +449,8 @@ paths:
   /api/chat:
     post:
       summary: Chat with AI assistant
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -457,7 +459,10 @@ paths:
               type: object
               properties:
                 message: { type: string }
-                sessionKey: { type: string, description: Reuse to persist conversation }
+                sessionKey:
+                  type: string
+                  description: Reuse to persist conversation (UUID v4)
+                  pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
                 history:
                   type: array
                   items:
@@ -479,6 +484,8 @@ paths:
                   model: { type: string }
                   usage: { type: object }
                   sessionKey: { type: string }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden (session does not belong to user) }
         '422': { description: Validation error }
         '500': { description: Server error }
 
