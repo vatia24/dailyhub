@@ -15,26 +15,37 @@ final class Database
         if (self::$conn) {
             return self::$conn;
         }
-        $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: '127.0.0.1';
-        $port = (int)($_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: 3306);
-        $db = $_ENV['DB_NAME'] ?? $_ENV['DB_DATABASE'] ?? getenv('DB_NAME') ?: (getenv('DB_DATABASE') ?: 'sumo');
-        $user = $_ENV['DB_USER'] ?? $_ENV['DB_USERNAME'] ?? getenv('DB_USER') ?: (getenv('DB_USERNAME') ?: 'root');
-        $pass = $_ENV['DB_PASS'] ?? $_ENV['DB_PASSWORD'] ?? getenv('DB_PASS') ?: (getenv('DB_PASSWORD') ?: '');
+        $get = function (array $keys, $default = null) {
+            foreach ($keys as $k) {
+                if (isset($_ENV[$k]) && $_ENV[$k] !== '') return $_ENV[$k];
+                $v = getenv($k);
+                if ($v !== false && $v !== '') return $v;
+                if (isset($_SERVER[$k]) && $_SERVER[$k] !== '') return $_SERVER[$k];
+            }
+            return $default;
+        };
+        
+        // Support multiple common env names (DO/Heroku styles)
+        $host = (string)$get(['DB_HOST','DBHOST','MYSQL_HOST','MYSQLHOST'], 'sumoapp-do-user-18974331-0.g.db.ondigitalocean.com');
+        $port = (int)$get(['DB_PORT','DBPORT','MYSQL_PORT','MYSQLPORT'], 25060);
+        $db   = (string)$get(['DB_NAME','DB_DATABASE','MYSQL_DATABASE','MYSQLDB','MYSQLDATABASE'], 'Sumo');
+        $user = (string)$get(['DB_USER','DB_USERNAME','MYSQL_USER','MYSQLUSER'], 'doadmin');
+        $pass = (string)$get(['DB_PASS','DB_PASSWORD','MYSQL_PASSWORD','MYSQLPWD','MYSQLPASS'], 'AVNS_bwUIKwjWNFdm2LDNUMJ');
         $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
         $options = [
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_TIMEOUT => (int)($_ENV['DB_CONNECT_TIMEOUT'] ?? getenv('DB_CONNECT_TIMEOUT') ?: 5),
+            PDO::ATTR_TIMEOUT => (int)$get(['DB_CONNECT_TIMEOUT'], 5),
         ];
         // Optional SSL configuration for Managed DBs
-        $sslCa = $_ENV['DB_SSL_CA'] ?? getenv('DB_SSL_CA') ?: '';
+        $sslCa = (string)$get(['DB_SSL_CA','MYSQL_SSL_CA'], '');
         if ($sslCa !== '') {
             $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
             // Some providers also need verify server cert toggle
             if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
-                $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (bool)($_ENV['DB_SSL_VERIFY'] ?? getenv('DB_SSL_VERIFY') ?: false);
+                $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (bool)$get(['DB_SSL_VERIFY','MYSQL_SSL_VERIFY'], false);
             }
         }
         try {
